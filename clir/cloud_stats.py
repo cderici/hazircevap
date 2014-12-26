@@ -7,6 +7,9 @@ import itertools
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
 import sys
+import codecs
+
+# pip install git+git://github.com/amueller/word_cloud.git
 
 def calculate_wordcloud(text,max_words=100):
     return WordCloud(background_color="white",max_words=max_words,margin=10,font_path='/Users/cagil/Library/Fonts/Aller_Rg.ttf').generate(text)
@@ -18,7 +21,7 @@ def show_wordcloud(wordcloud):
 
 #query = "Which continent has the highest population?"
 def parse_document(filename,query):
-    myfile = open(filename)
+    myfile = codecs.open(filename,"r","utf-8")
     raw = myfile.read()
     sentences = sent_tokenize(raw)
     tokenizer = RegexpTokenizer(r'\w+') #tokenizer.tokenize(sentences[0])
