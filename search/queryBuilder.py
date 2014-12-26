@@ -14,7 +14,30 @@ def buildIndriQuerySingle(qID, terms):
 
     termsText = re.sub("[,]", '', termsText)
 
-    queryText = """ 
+    queryText = """
+<parameters>
+<index>""" + indexDir + """</index>
+
+<query>
+<number>0</number>
+<text>#combine("""
+
+    queryText += termsText + ')'
+
+
+    queryText += """</text>
+</query>
+</parameters>
+"""
+
+    with codecs.open(queryDir + str(qID), 'w+', 'utf-8') as qFile:
+        qFile.write(queryText)
+
+
+def buildIndriQuerySingleFromQuestion(qID, termsText):
+    termsText = re.sub("[,]", '', termsText)
+
+    queryText = """
 <parameters>
 <index>""" + indexDir + """</index>
 
