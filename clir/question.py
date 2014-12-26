@@ -5,8 +5,8 @@ class question(object):
     def __init__(self, id,type, tr, eng, answer=None):
         self.id = id
         self.type = type
-        self.tr = tr
-        self.eng = eng
+        self.tr = tr.strip('?')
+        self.eng = eng.strip('?')
         self.answer = answer
         self.clouds = []
 
