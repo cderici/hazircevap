@@ -13,7 +13,7 @@ class question(object):
     def search(self,query_dir = queryBuilder.queryDir):
         param_filename =  os.path.join(query_dir, str(self.id))
         try:
-            param_file = open(param_filename,"r")
+            param_file = codecs.open(param_filename,"r","utf-8")
         except IOError:
             queryBuilder.buildIndriQuerySingleFromQuestion(self.id, self.eng)
             #param_file = open(param_filename,"r")
