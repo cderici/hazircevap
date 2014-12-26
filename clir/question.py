@@ -19,11 +19,14 @@ class question(object):
             #param_file = open(param_filename,"r")
         doc_ids = indriHandler.singleIndriQuery(self.id)
         doc_dir = os.path.join(query_dir, "docs",  str(self.id))
+        if not os.path.exists(doc_dir):
+            os.makedirs(doc_dir)
 
         for ind,doc_id in enumerate(doc_ids):
             doc = indriDocFetch.getDoc(doc_id)
+            doc_decoded = doc.decode('utf-8')
             with codecs.open(os.path.join(doc_dir, str(ind)),'w+', 'utf-8') as q_file:
-                q_file.write(doc)
+                q_file.write(doc_decoded)
 
     def build_word_clouds(self, query_dir = queryBuilder.queryDir):
         doc_dir = os.path.join(query_dir, "docs",  str(self.id))
