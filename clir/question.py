@@ -17,7 +17,7 @@ class question(object):
         except IOError:
             queryBuilder.buildIndriQuerySingleFromQuestion(self.id, self.eng)
             #param_file = open(param_filename,"r")
-        doc_ids = indriHandler.singleIndriQuery(param_filename)
+        doc_ids = indriHandler.singleIndriQuery(self.id)
         doc_dir = os.path.join(query_dir, "docs",  str(self.id))
 
         for ind,doc_id in enumerate(doc_ids):
