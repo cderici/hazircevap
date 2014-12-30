@@ -45,12 +45,11 @@ class question(object):
                         exists = True
                         break
                 for word in self.answer.split(' '):
-                    for ind,(word, freq) in enumerate(w_c.words_):
-                        if word == self.answer:
+                    for ind,(terms, freq) in enumerate(w_c.words_):
+                        if word == terms:
                             print(ind+1,word, freq)
                             continue
                     print(word," no")
-
                 self.has_answer.append(exists)
 
 
