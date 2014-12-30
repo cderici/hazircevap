@@ -48,8 +48,7 @@ class question(object):
                     for ind,(terms, freq) in enumerate(w_c.words_):
                         if word == terms:
                             print(ind+1,word, freq)
-                            continue
-                    print(word," no")
+                            break
                 self.has_answer.append(exists)
 
 
