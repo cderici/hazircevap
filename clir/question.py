@@ -7,8 +7,9 @@ class question(object):
         self.type = type
         self.tr = tr.strip('?').replace("/"," ")
         self.eng = eng.strip('?').replace("/"," ")
-        self.answer = answer
+        self.answer = answer.lower()
         self.clouds = []
+        self.has_answer = []
 
     def search(self,query_dir = queryBuilder.queryDir):
         param_filename =  os.path.join(query_dir, str(self.id))
@@ -38,8 +39,22 @@ class question(object):
                 w_c = cloud_stats.calculate_wordcloud(text)
                 self.clouds.append(w_c)
                 #show_wordcloud(w_c)
+                exists = False
+                for word in self.answer.split(' '):
+                    if(word in text):
+                        exists = True
+                        break
+                for word in self.answer.split(' '):
+                    for ind,(word, freq) in enumerate(w_c.words_):
+                        if word == self.answer:
+                            print(ind+1,word, freq)
+                            continue
+                    print(word," no")
 
-    def have_answer_in_docs(self):
+                self.has_answer.append(exists)
+
+
+    def have_answer_in_cloud(self):
         for cloud_ind in range(0,len(self.clouds)):
             for ind,(word, freq) in enumerate(self.clouds[cloud_ind].words_):
                 if word == self.answer:
