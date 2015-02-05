@@ -12,7 +12,7 @@ import codecs
 # pip install git+git://github.com/amueller/word_cloud.git
 
 def calculate_wordcloud(text,max_words=100):
-    return WordCloud(background_color="white",max_words=max_words,margin=10,font_path='/Users/cagil/Library/Fonts/Aller_Rg.ttf').generate(text)
+    return WordCloud(background_color="white",max_words=max_words,margin=10).generate(text)
 
 def show_wordcloud(wordcloud):
     plt.imshow(wordcloud)

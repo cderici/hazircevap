@@ -5,7 +5,7 @@ dumpindex = indriDir + 'dumpindex/dumpindex'
 
 indexDir = indriDir + 'wikipediaIndex/'
 
-indexDir_tr = "/home/hazircevap/turkceIndexDir/"
+indexDir_tr = "/home/hazircevap/vikiIndex/"
 
 
 def getDoc(docID):
