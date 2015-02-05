@@ -31,8 +31,8 @@ def main(argv):
         sys.stderr.write("Usage: %s <filename>\n" % (argv[0],))
         return 1
 
-    if not os.path.exists(argv[1]):
-        sys.stderr.write("ERROR: File %r was not found!\n" % (argv[1],))
+    if not os.path.exists(os.path.join(param_dir,str(argv[1]))):
+        sys.stderr.write("ERROR: File %r was not found in %s!\n" % (argv[1],param_dir))
         return 1
     translate(argv[1])
 
