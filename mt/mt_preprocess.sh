@@ -3,7 +3,7 @@ moses_path="/opt/moses"
 corpus_path="/home/hazircevap/moses/corpus/tr-en"
 working_path="/home/hazircevap/moses/working"
 
-Function tokenize_BU_corpus {
+function tokenize_BU_corpus {
     $moses_path/scripts/tokenizer/tokenizer.perl -l en < $corpus_path/BU_en.txt > $corpus_path/BU.tok.en
     python tokenize_tr.py $corpus_path/BU_tr.txt  $corpus_path/BU.tok.tr
 }
