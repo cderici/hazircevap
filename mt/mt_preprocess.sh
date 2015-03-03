@@ -7,11 +7,20 @@ function tokenize_BU_corpus {
     python tokenize_tr.py $corpus_path/BU_tr.txt  $corpus_path/BU.tok.tr
 }
 
+function train_truecaser {
+    $moses_path/scripts/recaser/train-truecaser.perl --parallel \
+	--model $corpus_path/truecase-model.en \
+	--corpus $corpus_path/BU.tok.en
+    $moses_path/scripts/recaser/train-truecaser.perl \
+	--model $corpus_path/truecase-model.fr \
+	--corpus $corpus_path/BU.tok.tr
+}
+
 echo 'usage: . mt_preprocess.sh'
 echo ''
 echo 'tokenize_BU_corpus'
 echo ''
-echo ''
+echo 'train_truecaser'
 echo ''
 echo ''
 echo ''

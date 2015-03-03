@@ -2,6 +2,7 @@ from __future__ import print_function
 import nltk,codecs,sys,os
 
 def tokenize_tr(in_filename,out_filename):
+    sys.stdout.write("Nltk word_tokenize\nLanguage: tr\n")
     tokens = []
     with codecs.open(in_filename,"r", 'utf-8') as infile, codecs.open(out_filename,"wb", 'utf-8') as out:
         for line in infile.readlines():
