@@ -1,6 +1,7 @@
 #!/bin/bash
 moses_path="/opt/moses"
-corpus_path="/home/hazircevap/moses/corpus/tr-en/"
+corpus_path="/home/hazircevap/moses/corpus/tr-en"
+working_path="/home/hazircevap/moses/working"
 
 function tokenize_BU_corpus {
     $moses_path/scripts/tokenizer/tokenizer.perl -l en < $corpus_path/BU_en.txt > $corpus_path/BU.tok.en
@@ -33,15 +34,37 @@ function clean_BU {
 	$corpus_path/BU.true tr en \
 	$corpus_path/BU.clean 1 80
 }
+
+# the following will build an appropriate 3-gram language model, removing singletons, smoothing with improved Kneser-Ney, and adding sentence boundary symbols:
+function train_lm_BU {
+    mkdir $working_path/lm
+    #cd $working_path/lm
+    $moses_path/irstlm/bin/add-start-end.sh                 \
+	< $corpus_path/BU.true.en \
+	> $working_path/lm/BU.sb.en
+    export IRSTLM=$moses_path/irstlm; $moses_path/irstlm/bin/build-lm.sh \
+	-i $working_path/lm/BU.sb.en \
+	-t ./tmp  -p -s improved-kneser-ney -n 5 -o $working_path/lm/BU.lm.en
+    $moses_path/irstlm/bin/compile-lm  \
+	--text=yes \
+	$working_path/lm/BU.lm.en.gz \
+	$working_path/lm/BU.arpa.en
+    # KENLM
+    $moses_path/bin/build_binary \
+	$working_path/lm/BU.arpa.en \
+	$working_path/lm/BU.blm.en
+    #cd -
+}
+
 echo 'usage: . mt_preprocess.sh'
 echo ''
 echo 'tokenize_BU_corpus'
 echo ''
 echo 'train_truecaser'
 echo ''
+echo 'truecase_BU'
 echo ''
-echo ''
-echo ''
+echo 'clean_BU'
 
 #move_lines $1 $2 $3
 #traverse $1
