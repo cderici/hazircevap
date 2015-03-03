@@ -3,7 +3,7 @@ moses_path="/opt/moses"
 corpus_path="/home/hazircevap/moses/corpus/tr-en"
 working_path="/home/hazircevap/moses/working"
 
-function tokenize_BU_corpus {
+Function tokenize_BU_corpus {
     $moses_path/scripts/tokenizer/tokenizer.perl -l en < $corpus_path/BU_en.txt > $corpus_path/BU.tok.en
     python tokenize_tr.py $corpus_path/BU_tr.txt  $corpus_path/BU.tok.tr
 }
@@ -35,7 +35,7 @@ function clean_BU {
 	$corpus_path/BU.clean 1 80
 }
 
-# the following will build an appropriate 3-gram language model, removing singletons, smoothing with improved Kneser-Ney, and adding sentence boundary symbols:
+# the following will build an appropriate 5-gram language model, removing singletons, smoothing with improved Kneser-Ney, and adding sentence boundary symbols:
 function train_lm_BU {
     mkdir $working_path/lm
     #cd $working_path/lm
@@ -50,12 +50,20 @@ function train_lm_BU {
 	$working_path/lm/BU.lm.en.gz \
 	$working_path/lm/BU.arpa.en
     # KENLM
-    $moses_path/bin/build_binary \
+    $moses_path/bin/build_binary -i \
 	$working_path/lm/BU.arpa.en \
 	$working_path/lm/BU.blm.en
     #cd -
 }
 
+funtion train_mt {
+    nohup nice $moses_path/scripts/training/train-model.perl -cores 12 -root-dir train \
+	-corpus $corpus_path/BU.train.clean                             \
+	-f tr -e en -alignment grow-diag-final-and -reordering msd-bidirectional-fe \
+	-lm 0:5:$working_path/lm/BU.blm.en:8           \
+	-external-bin-dir $moses_path/tools >& training.out &
+
+}
 echo 'usage: . mt_preprocess.sh'
 echo ''
 echo 'tokenize_BU_corpus'
@@ -65,6 +73,14 @@ echo ''
 echo 'truecase_BU'
 echo ''
 echo 'clean_BU'
+echo ''
+echo 'train_lm_BU > lm_out.txt 2>&1'
+echo ''
+echo ' > train_out.txt 2>&1'
+echo ''
+echo ''
+echo ''
+echo ''
 
 #move_lines $1 $2 $3
 #traverse $1
