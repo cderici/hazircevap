@@ -56,7 +56,7 @@ function train_lm_BU {
     #cd -
 }
 
-funtion train_mt {
+function train_mt {
     nohup nice $moses_path/scripts/training/train-model.perl -cores 12 -root-dir train \
 	-corpus $corpus_path/BU.train.clean                             \
 	-f tr -e en -alignment grow-diag-final-and -reordering msd-bidirectional-fe \
