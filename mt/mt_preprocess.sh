@@ -8,7 +8,7 @@ function tokenize_BU_corpus {
 }
 
 function train_truecaser {
-    $moses_path/scripts/recaser/train-truecaser.perl --parallel \
+    $moses_path/scripts/recaser/train-truecaser.perl \
 	--model $corpus_path/truecase-model.en \
 	--corpus $corpus_path/BU.tok.en
     $moses_path/scripts/recaser/train-truecaser.perl \
