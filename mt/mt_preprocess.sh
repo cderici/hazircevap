@@ -1,6 +1,6 @@
 #!/bin/bash
 moses_path="/opt/moses"
-corpus_path="/home/hazircevap/moses/corpus"
+corpus_path="/home/hazircevap/moses/corpus/tr-en/"
 
 function tokenize_BU_corpus {
     $moses_path/scripts/tokenizer/tokenizer.perl -l en < $corpus_path/BU_en.txt > $corpus_path/BU.tok.en
@@ -12,10 +12,27 @@ function train_truecaser {
 	--model $corpus_path/truecase-model.en \
 	--corpus $corpus_path/BU.tok.en
     $moses_path/scripts/recaser/train-truecaser.perl \
-	--model $corpus_path/truecase-model.fr \
+	--model $corpus_path/truecase-model.tr \
 	--corpus $corpus_path/BU.tok.tr
 }
 
+function truecase_BU {
+    $moses_path/scripts/recaser/truecase.perl \
+	--model $corpus_path/truecase-model.en \
+	< $corpus_path/BU.tok.en \
+	> $corpus_path/BU.true.en
+
+    $moses_path/scripts/recaser/truecase.perl \
+	--model $corpus_path/truecase-model.tr \
+        < $corpus_path/BU.tok.tr  \
+	> $corpus_path/BU.true.tr
+}
+
+function clean_BU {
+    $moses_path/scripts/training/clean-corpus-n.perl \
+	$corpus_path/BU.true tr en \
+	$corpus_path/BU.clean 1 80
+}
 echo 'usage: . mt_preprocess.sh'
 echo ''
 echo 'tokenize_BU_corpus'
