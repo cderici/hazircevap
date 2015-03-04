@@ -76,7 +76,7 @@ function tuning_mt {
     nohup nice $moses_path/scripts/training/mert-moses.pl \
         $corpus_path/BU.tuning.true.tr $corpus_path/BU.tuning.true.en \
 	$moses_path/bin/moses $working_path/train/model/moses.ini --mertdir $moses_path/bin/ \
-	&> mert.out &
+	--decoder-flags="-threads 8" &> mert.out &
 }
 
 function binarise_models {
@@ -128,9 +128,9 @@ echo 'train_mt'
 echo ''
 echo 'tuning_mt'
 echo ''
+echo 'binarise_models'
 echo ''
-echo ''
-echo ''
+echo 'test_mt'
 
 #move_lines $1 $2 $3
 #traverse $1
