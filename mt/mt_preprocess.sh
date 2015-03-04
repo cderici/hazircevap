@@ -56,14 +56,60 @@ function train_lm_BU {
     #cd -
 }
 
+function divide_corpus {
+    python divide.py  $corpus_path/BU.clean.tr $corpus_path/BU.train.clean.tr /tmp/BU.tuning.clean.tr /tmp/BU.test.clean.tr
+    python divide.py  $corpus_path/BU.clean.en $corpus_path/BU.train.clean.en /tmp/BU.tuning.clean.en /tmp/BU.test.clean.en
+    python divide.py  $corpus_path/BU.true.tr /tmp/BU.train.true.tr $corpus_path/BU.tuning.true.tr $corpus_path/BU.test.true.tr
+    python divide.py  $corpus_path/BU.true.en /tmp/BU.train.true.en $corpus_path/BU.tuning.true.en $corpus_path/BU.test.true.en
+}
+
 function train_mt {
-    nohup nice $moses_path/scripts/training/train-model.perl -cores 12 -root-dir train \
+    nohup nice $moses_path/scripts/training/train-model.perl -cores 12 -root-dir $working_path/train \
 	-corpus $corpus_path/BU.train.clean                             \
 	-f tr -e en -alignment grow-diag-final-and -reordering msd-bidirectional-fe \
 	-lm 0:5:$working_path/lm/BU.blm.en:8           \
 	-external-bin-dir $moses_path/tools >& training.out &
 
 }
+
+function tuning_mt {
+    nohup nice $moses_path/scripts/training/mert-moses.pl \
+        $corpus_path/BU.tuning.true.tr $corpus_path/BU.tuning.true.en \
+	$moses_path/bin/moses $working_path/train/model/moses.ini --mertdir $moses_path/bin/ \
+	&> mert.out &
+}
+
+function binarise_models {
+    mkdir $working_path/binarised-model
+    $moses_path/bin/processPhraseTableMin \
+	-in $working_path/train/model/phrase-table.gz -nscores 4 \
+	-out $working_path/binarised-model/phrase-table
+    $moses_path/bin/processLexicalTableMin \
+	-in $working_path/train/model/reordering-table.wbe-msd-bidirectional-te.gz \
+	-out $working_path/binarised-model/reordering-table
+}
+
+test_set_tr='$corpus_path/BU.test.true.tr'
+test_set_en='$corpus_path/BU.test.true.en'
+function test_mt {
+    cd ~/working
+    $moses_path/scripts/training/filter-model-given-input.pl             \
+	$working_path/filtered-BU $working_path/mert-work/moses.ini $test_set_tr  \
+	-Binarizer $moses_path/bin/processPhraseTableMin
+
+    #You can test the decoder by first translating the test set (takes a wee while)
+    #then running the BLEU script on it:
+
+    nohup nice $moses_path/bin/moses            \
+	-f $working_path/filtered-BU/moses.ini   \
+	< $test_set_tr                \
+	> $working_path/BU.test.translated.en        \
+	2> test.out
+    $moses_path/scripts/generic/multi-bleu.perl \
+	-lc $test_set_en
+	< $working_path/BU.test.translated.en
+}
+
 echo 'usage: . mt_preprocess.sh'
 echo ''
 echo 'tokenize_BU_corpus'
@@ -76,7 +122,11 @@ echo 'clean_BU'
 echo ''
 echo 'train_lm_BU > lm_out.txt 2>&1'
 echo ''
-echo ' > train_out.txt 2>&1'
+echo 'divide_corpus'
+echo ''
+echo 'train_mt'
+echo ''
+echo 'tuning_mt'
 echo ''
 echo ''
 echo ''
