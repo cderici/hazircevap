@@ -37,7 +37,7 @@ function clean_BU {
 
 # the following will build an appropriate 5-gram language model, removing singletons, smoothing with improved Kneser-Ney, and adding sentence boundary symbols:
 function train_lm_BU {
-    mkdir $working_path/lm
+    mkdir -p $working_path/lm
     #cd $working_path/lm
     $moses_path/irstlm/bin/add-start-end.sh                 \
 	< $corpus_path/BU.true.en \
@@ -64,23 +64,26 @@ function divide_corpus {
 }
 
 function train_mt {
+    mkdir -p $working_path/train
     nohup nice $moses_path/scripts/training/train-model.perl -cores 12 -root-dir $working_path/train \
 	-corpus $corpus_path/BU.train.clean                             \
 	-f tr -e en -alignment grow-diag-final-and -reordering msd-bidirectional-fe \
 	-lm 0:5:$working_path/lm/BU.blm.en:8           \
 	-external-bin-dir $moses_path/tools >& training.out &
-
 }
 
 function tuning_mt {
+    mkdir -p $working_path/tuning/mert-work
     nohup nice $moses_path/scripts/training/mert-moses.pl \
         $corpus_path/BU.tuning.true.tr $corpus_path/BU.tuning.true.en \
-	$moses_path/bin/moses $working_path/train/model/moses.ini --mertdir $moses_path/bin/ \
-	--decoder-flags="-threads 8" &> mert.out &
+	$moses_path/bin/moses $working_path/train/model/moses.ini \
+	--working-dir $working_path/tuning/mert-work  --mertdir $moses_path/bin/ \
+	-root-dir $working_path/tuning --decoder-flags="-threads 8 -v 0" &> mert.out &
+    tail -n 2 $working_path/tuning/mert-work/run*.mert.log
 }
 
 function binarise_models {
-    mkdir $working_path/binarised-model
+    mkdir -p $working_path/binarised-model
     $moses_path/bin/processPhraseTableMin \
 	-in $working_path/train/model/phrase-table.gz -nscores 4 \
 	-out $working_path/binarised-model/phrase-table
@@ -94,7 +97,7 @@ test_set_en='$corpus_path/BU.test.true.en'
 function test_mt {
     cd ~/working
     $moses_path/scripts/training/filter-model-given-input.pl             \
-	$working_path/filtered-BU $working_path/mert-work/moses.ini $test_set_tr  \
+	$working_path/filtered-BU $working_path/tuning/mert-work/moses.ini $test_set_tr  \
 	-Binarizer $moses_path/bin/processPhraseTableMin
 
     #You can test the decoder by first translating the test set (takes a wee while)
