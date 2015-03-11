@@ -1,5 +1,7 @@
 #!/bin/bash
 moses_path="/opt/moses"
+moses_dec_path="/opt/moses/mosesdecoder"
+irstlm_path="$moses_path/irstlm-5.80.08"
 corpus_path="/home/hazircevap/moses/corpus/tr-en"
 working_path="/home/hazircevap/moses/working"
 
@@ -39,18 +41,18 @@ function clean_BU {
 function train_lm_BU {
     mkdir -p $working_path/lm
     #cd $working_path/lm
-    $moses_path/irstlm/bin/add-start-end.sh                 \
+    $irstlm_path/bin/add-start-end.sh                 \
 	< $corpus_path/BU.true.en \
 	> $working_path/lm/BU.sb.en
-    export IRSTLM=$moses_path/irstlm; $moses_path/irstlm/bin/build-lm.sh \
+    export IRSTLM=$irstlm_path; $irstlm_path/bin/build-lm.sh \
 	-i $working_path/lm/BU.sb.en \
 	-t ./tmp  -p -s improved-kneser-ney -n 5 -o $working_path/lm/BU.lm.en
-    $moses_path/irstlm/bin/compile-lm  \
+    $irstlm_path/bin/compile-lm  \
 	--text=yes \
 	$working_path/lm/BU.lm.en.gz \
 	$working_path/lm/BU.arpa.en
     # KENLM
-    $moses_path/bin/build_binary -i \
+    $moses_dec_path/bin/build_binary -i \
 	$working_path/lm/BU.arpa.en \
 	$working_path/lm/BU.blm.en
     #cd -
@@ -76,18 +78,18 @@ function tuning_mt {
     mkdir -p $working_path/tuning/mert-work
     nohup nice $moses_path/scripts/training/mert-moses.pl \
         $corpus_path/BU.tuning.true.tr $corpus_path/BU.tuning.true.en \
-	$moses_path/bin/moses $working_path/train/model/moses.ini \
-	--working-dir $working_path/tuning/mert-work  --mertdir $moses_path/bin/ \
+	$moses_dec_path/bin/moses $working_path/train/model/moses.ini \
+	--working-dir $working_path/tuning/mert-work  --mertdir $moses_dec_path/bin/ \
 	-root-dir $working_path/tuning --decoder-flags="-threads 8 -v 0" &> mert.out &
     tail -n 2 $working_path/tuning/mert-work/run*.mert.log
 }
 
 function binarise_models {
     mkdir -p $working_path/binarised-model
-    $moses_path/bin/processPhraseTableMin \
+    $moses_dec_path/bin/processPhraseTableMin \
 	-in $working_path/train/model/phrase-table.gz -nscores 4 \
 	-out $working_path/binarised-model/phrase-table
-    $moses_path/bin/processLexicalTableMin \
+    $moses_dec_path/bin/processLexicalTableMin \
 	-in $working_path/train/model/reordering-table.wbe-msd-bidirectional-te.gz \
 	-out $working_path/binarised-model/reordering-table
 }
@@ -98,12 +100,12 @@ function test_mt {
     cd ~/working
     $moses_path/scripts/training/filter-model-given-input.pl             \
 	$working_path/filtered-BU $working_path/tuning/mert-work/moses.ini $test_set_tr  \
-	-Binarizer $moses_path/bin/processPhraseTableMin
+	-Binarizer $moses_dec_path/bin/processPhraseTableMin
 
     #You can test the decoder by first translating the test set (takes a wee while)
     #then running the BLEU script on it:
 
-    nohup nice $moses_path/bin/moses            \
+    nohup nice $moses_dec_path/bin/moses            \
 	-f $working_path/filtered-BU/moses.ini   \
 	< $test_set_tr                \
 	> $working_path/BU.test.translated.en        \
