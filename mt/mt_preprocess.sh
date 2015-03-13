@@ -4,6 +4,7 @@ moses_dec_path="/opt/moses/mosesdecoder"
 irstlm_path="$moses_path/irstlm-5.80.08"
 corpus_path="/home/hazircevap/moses/corpus/tr-en"
 working_path="/home/hazircevap/moses/working"
+log_dir="/home/hazircevap/moses/working/logs"
 
 function tokenize_BU_corpus {
     $moses_path/scripts/tokenizer/tokenizer.perl -l en < $corpus_path/BU_en.txt > $corpus_path/BU.tok.en
@@ -71,7 +72,7 @@ function train_mt {
 	-corpus $corpus_path/BU.train.clean                             \
 	-f tr -e en -alignment grow-diag-final-and -reordering msd-bidirectional-fe \
 	-lm 0:5:$working_path/lm/BU.blm.en:8           \
-	-external-bin-dir $moses_path/tools >& training.out &
+	-external-bin-dir $moses_path/tools >& $log_dir/training.out &
 }
 
 function tuning_mt {
@@ -80,7 +81,7 @@ function tuning_mt {
         $corpus_path/BU.tuning.true.tr $corpus_path/BU.tuning.true.en \
 	$moses_dec_path/bin/moses $working_path/train/model/moses.ini \
 	--working-dir $working_path/tuning/mert-work  --mertdir $moses_dec_path/bin/ \
-	-root-dir $working_path/tuning --decoder-flags="-threads 8 -v 0" &> mert.out &
+	-root-dir $working_path/tuning --decoder-flags="-threads 8 -v 0" &> $log_dir/tuning_mert.out &
     tail -n 2 $working_path/tuning/mert-work/run*.mert.log
 }
 
@@ -96,25 +97,32 @@ function binarise_models {
 
 test_set_tr="$corpus_path/BU.test.true.tr"
 test_set_en="$corpus_path/BU.test.true.en"
-function test_mt {
-    cd ~/working
+function test_filter {
     $moses_path/scripts/training/filter-model-given-input.pl             \
 	$working_path/filtered-BU $working_path/tuning/mert-work/moses.ini $test_set_tr  \
-	-Binarizer $moses_dec_path/bin/processPhraseTableMin
+	-binarizer $moses_dec_path/bin/processPhraseTableMin
 
     #You can test the decoder by first translating the test set (takes a wee while)
     #then running the BLEU script on it:
+}
 
+function test_mt {
     nohup nice $moses_dec_path/bin/moses            \
 	-f $working_path/filtered-BU/moses.ini   \
-	< $test_set_tr                \
+	-i $test_set_tr                \
 	> $working_path/BU.test.translated.en        \
-	2> test.out
+	2> $log_dir/test-translation.out
     $moses_path/scripts/generic/multi-bleu.perl \
 	-lc $test_set_en
 	< $working_path/BU.test.translated.en
 }
-
+function test_mt_alt {
+    nohup nice $moses_dec_path/bin/moses  \
+	-f $working_path/filtered-BU/moses.ini   \
+	-i $working_path/filtered-BU/input.20031 \
+	> $working_path/BU.test.translated.en   \
+	2> $log_dir/test-translation.out
+}
 echo 'usage: . mt_preprocess.sh'
 echo ''
 echo 'tokenize_BU_corpus'
