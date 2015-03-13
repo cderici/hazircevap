@@ -113,8 +113,7 @@ function test_mt {
 	> $working_path/BU.test.translated.en        \
 	2> $log_dir/test-translation.out
     $moses_path/scripts/generic/multi-bleu.perl \
-	-lc $test_set_en
-	< $working_path/BU.test.translated.en
+	-lc $test_set_en < $working_path/BU.test.translated.en
 }
 function test_mt_alt {
     nohup nice $moses_dec_path/bin/moses  \
@@ -122,6 +121,9 @@ function test_mt_alt {
 	-i $working_path/filtered-BU/input.20031 \
 	> $working_path/BU.test.translated.en   \
 	2> $log_dir/test-translation.out
+    $moses_path/scripts/generic/multi-bleu.perl \
+	-lc $test_set_en \
+	< $working_path/BU.test.translated.en  >& $log_dir/test-bleu.out &
 }
 echo 'usage: . mt_preprocess.sh'
 echo ''
