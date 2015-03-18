@@ -95,8 +95,8 @@ function binarise_models {
 	-out $working_path/binarised-model/reordering-table
 }
 
-test_set_tr="$corpus_path/BU.test.true.tr"
-test_set_en="$corpus_path/BU.test.true.en"
+test_set_tr="$corpus_path/BU.test.clean.tr"
+test_set_en="$corpus_path/BU.test.clean.en"
 function test_filter {
     $moses_path/scripts/training/filter-model-given-input.pl             \
 	$working_path/filtered-BU $working_path/tuning/mert-work/moses.ini $test_set_tr  \
