@@ -6,6 +6,12 @@ corpus_path="/home/hazircevap/moses/corpus/tr-en"
 working_path="/home/hazircevap/moses/working"
 log_dir="/home/hazircevap/moses/working/logs"
 
+check_exists () {
+    if [ ! -f $1 ]; then
+	echo "< $1 > File not found!"
+    fi
+}
+
 function tokenize_BU_corpus {
     $moses_path/scripts/tokenizer/tokenizer.perl -l en < $corpus_path/BU_en.txt > $corpus_path/BU.tok.en
     python tokenize_tr.py $corpus_path/BU_tr.txt  $corpus_path/BU.tok.tr
@@ -86,13 +92,19 @@ function tuning_mt {
 }
 
 function binarise_models {
+    pt_file = $working_path/train/model/phrase-table.gz
+    reord_file = $working_path/train/model/reordering-table.wbe-msd-bidirectional-fe.gz
+    check_exists $pt_file
+    check_exists $reord_file
     mkdir -p $working_path/binarised-model
     $moses_dec_path/bin/processPhraseTableMin \
-	-in $working_path/train/model/phrase-table.gz -nscores 4 \
+	-in $pt_file -nscores 4 \
 	-out $working_path/binarised-model/phrase-table
     $moses_dec_path/bin/processLexicalTableMin \
-	-in $working_path/train/model/reordering-table.wbe-msd-bidirectional-te.gz \
+	-in  $reord_file \
 	-out $working_path/binarised-model/reordering-table
+    echo "You should edit moses.ini file\n http://www.statmt.org/moses/?n=Advanced.RuleTables#ntoc3"
+    #cp /home/hazircevap/moses/working/tuning/mert-work/moses.ini /home/hazircevap/moses/working/binarised-model/
 }
 
 test_set_tr="$corpus_path/BU.test.clean.tr"
