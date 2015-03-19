@@ -92,8 +92,8 @@ function tuning_mt {
 }
 
 function binarise_models {
-    pt_file = $working_path/train/model/phrase-table.gz
-    reord_file = $working_path/train/model/reordering-table.wbe-msd-bidirectional-fe.gz
+    pt_file = "$working_path/train/model/phrase-table.gz"
+    reord_file = "$working_path/train/model/reordering-table.wbe-msd-bidirectional-fe.gz"
     check_exists $pt_file
     check_exists $reord_file
     mkdir -p $working_path/binarised-model
