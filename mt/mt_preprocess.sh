@@ -72,13 +72,24 @@ function divide_corpus {
     python divide.py  $corpus_path/BU.true.en /tmp/BU.train.true.en $corpus_path/BU.tuning.true.en $corpus_path/BU.test.true.en
 }
 
+lang_model_en="$working_path/lm/BU.blm.en"
+n_gram=5
+
+set_working_path(){
+    working_path="$1"
+}
+
+set_corpus_path(){
+    corpus_path="$1"
+}
+
 function train_mt {
     mkdir -p $working_path/train
     nohup nice $moses_path/scripts/training/train-model.perl -cores 12 -root-dir $working_path/train \
 	-corpus $corpus_path/BU.train.clean   \
 	-max-phrase-length 5 \
 	-f tr -e en -alignment grow-diag-final-and -reordering msd-bidirectional-fe \
-	-lm 0:5:$working_path/lm/BU.blm.en:8           \
+	-lm 0:$n_gram:$lang_model_en:8           \
 	-external-bin-dir $moses_path/tools >& $log_dir/training.out &
 }
 
