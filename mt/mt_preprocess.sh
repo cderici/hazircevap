@@ -151,7 +151,7 @@ translate_file(){
 	translate "$p"
     done < $1
 }
-# test_mt ~/moses/corpus/cografya_questions_all.txt $working_path/cografya_questions_all_translated.en
+# test_mt ~/moses/corpus/cografya_questions_all.txt $working_path/cografya_questions_all_translated.en $corpus_path/BU.test.clean.en
 function test_mt {
     nohup nice $moses_dec_path/bin/moses            \
 	-f $binary_ini -v 0 \
@@ -159,7 +159,7 @@ function test_mt {
 	> $2        \
 	2> $log_dir/translation.out
     $moses_path/scripts/generic/multi-bleu.perl \
-	-lc $1 < $2
+	-lc $3 < $2
 }
 
 echo 'usage: . mt_preprocess.sh'
