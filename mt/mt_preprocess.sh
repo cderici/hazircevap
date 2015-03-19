@@ -75,7 +75,8 @@ function divide_corpus {
 function train_mt {
     mkdir -p $working_path/train
     nohup nice $moses_path/scripts/training/train-model.perl -cores 12 -root-dir $working_path/train \
-	-corpus $corpus_path/BU.train.clean                             \
+	-corpus $corpus_path/BU.train.clean   \
+	-max-phrase-length 5 \
 	-f tr -e en -alignment grow-diag-final-and -reordering msd-bidirectional-fe \
 	-lm 0:5:$working_path/lm/BU.blm.en:8           \
 	-external-bin-dir $moses_path/tools >& $log_dir/training.out &
@@ -103,7 +104,7 @@ function binarise_models {
     $moses_dec_path/bin/processLexicalTableMin \
 	-in  $reord_file \
 	-out $working_path/binarised-model/reordering-table
-    echo "You should edit moses.ini file\n http://www.statmt.org/moses/?n=Advanced.RuleTables#ntoc3"
+    echo "You should edit moses.ini file http://www.statmt.org/moses/?n=Advanced.RuleTables#ntoc3"
     #cp /home/hazircevap/moses/working/tuning/mert-work/moses.ini /home/hazircevap/moses/working/binarised-model/
 }
 
@@ -136,6 +137,12 @@ function test_mt_alt {
     $moses_path/scripts/generic/multi-bleu.perl \
 	-lc $test_set_en \
 	< $working_path/BU.test.translated.en  >& $log_dir/test-bleu.out &
+}
+
+translate(){
+#    echo $1 | /opt/moses/mosesdecoder/bin/moses -f /home/hazircevap/moses/working/binarised-model/moses.ini -v 0
+    true_cased=$(echo $1 | $moses_path/scripts/recaser/truecase.perl --model $corpus_path/truecase-model.tr)
+    echo $true_cased | $moses_dec_path/bin/moses -f $working_path/binarised-model/moses.ini -v 0
 }
 echo 'usage: . mt_preprocess.sh'
 echo ''
