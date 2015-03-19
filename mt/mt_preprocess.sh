@@ -119,7 +119,7 @@ function test_filter {
     #then running the BLEU script on it:
 }
 
-function test_mt {
+function test_mt_BU {
     nohup nice $moses_dec_path/bin/moses            \
 	-f $working_path/filtered-BU/moses.ini   \
 	-i $test_set_tr                \
@@ -138,12 +138,30 @@ function test_mt_alt {
 	-lc $test_set_en \
 	< $working_path/BU.test.translated.en  >& $log_dir/test-bleu.out &
 }
-
+binary_ini="$working_path/binarised-model/moses.ini"
 translate(){
 #    echo $1 | /opt/moses/mosesdecoder/bin/moses -f /home/hazircevap/moses/working/binarised-model/moses.ini -v 0
     true_cased=$(echo $1 | $moses_path/scripts/recaser/truecase.perl --model $corpus_path/truecase-model.tr)
-    echo $true_cased | $moses_dec_path/bin/moses -f $working_path/binarised-model/moses.ini -v 0
+    echo $true_cased | $moses_dec_path/bin/moses -f $binary_ini -v 0
 }
+
+#translate_file ~/moses/corpus/cografya_questions_all.txt
+translate_file(){
+    while read p; do
+	translate "$p"
+    done < $1
+}
+# test_mt ~/moses/corpus/cografya_questions_all.txt $working_path/cografya_questions_all_translated.en
+function test_mt {
+    nohup nice $moses_dec_path/bin/moses            \
+	-f $binary_ini -v 0 \
+	-i $1             \
+	> $2        \
+	2> $log_dir/translation.out
+    $moses_path/scripts/generic/multi-bleu.perl \
+	-lc $1 < $2
+}
+
 echo 'usage: . mt_preprocess.sh'
 echo ''
 echo 'tokenize_BU_corpus'
