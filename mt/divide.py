@@ -10,7 +10,8 @@ def divide(in_filename,training,tuning,test):
     tokens = []
     with codecs.open(in_filename,"r", 'utf-8') as infile, codecs.open(training,"wb", 'utf-8') as tr , codecs.open(tuning,"wb", 'utf-8') as tu, codecs.open(test,"wb", 'utf-8') as te:
         i = 0
-        for line in infile.readlines():
+        line = infile.readline()
+        while line:
             if i < TEST*FACTOR:
                 out = te
             elif i < (TEST+TUNING)*FACTOR:
@@ -21,6 +22,7 @@ def divide(in_filename,training,tuning,test):
             i %= FACTOR*100
             tokens=nltk.word_tokenize(line)
             print(" ".join(tokens),file=out)
+            line = infile.readline()
             #tokens.append("\n")
             #out.write(" ".join(tokens))
 
