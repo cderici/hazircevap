@@ -8,7 +8,7 @@ FACTOR = 5
 def divide(in_filename,training,tuning,test):
     sys.stdout.write("Divide corpus into training test and tuning sets\n")
     tokens = []
-    with io.open(in_filename,encoding='utf-8') as infile, io.open(training, mode="wb", encoding='utf-8') as tr , io.open(tuning,mode="wb", encoding='utf-8') as tu, io.open(test,mode="wb", encoding='utf-8') as te:
+    with io.open(in_filename,encoding='utf-8') as infile, io.open(training, mode="w", encoding='utf-8') as tr , io.open(tuning,mode="w", encoding='utf-8') as tu, io.open(test,mode="w", encoding='utf-8') as te:
         i = 0
         line = infile.readline()
         while line:
