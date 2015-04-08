@@ -1,21 +1,24 @@
 from __future__ import print_function
 import nltk,codecs,sys,os
 
-#  5% 10% 85% -> 1 2 31
+TUNING = 0.8  # *5 4
+TEST = 1.2    # *5 6
+TRAINING = 98 # *5 490
+FACTOR = 5
 def divide(in_filename,training,tuning,test):
     sys.stdout.write("Divide corpus into training test and tuning sets\n")
     tokens = []
     with codecs.open(in_filename,"r", 'utf-8') as infile, codecs.open(training,"wb", 'utf-8') as tr , codecs.open(tuning,"wb", 'utf-8') as tu, codecs.open(test,"wb", 'utf-8') as te:
         i = 0
         for line in infile.readlines():
-            if i < 31:
-                out = tr
-            elif i < 33:
+            if i < TEST*FACTOR:
                 out = te
-            else:
+            elif i < (TEST+TUNING)*FACTOR:
                 out = tu
+            else:
+                out = tr
             i += 1
-            i %= 34
+            i %= FACTOR*100
             tokens=nltk.word_tokenize(line)
             print(" ".join(tokens),file=out)
             #tokens.append("\n")

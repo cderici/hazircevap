@@ -12,6 +12,8 @@ check_exists () {
     fi
 }
 
+# /home/hazircevap/moses/corpus/tr-en/BU-ALT.tr
+# /home/hazircevap/moses/corpus/tr-en/BU-ALT.en
 function tokenize_BU_corpus {
     $moses_path/scripts/tokenizer/tokenizer.perl -l en < $corpus_path/BU_en.txt > $corpus_path/BU.tok.en
     python tokenize_tr.py $corpus_path/BU_tr.txt  $corpus_path/BU.tok.tr
