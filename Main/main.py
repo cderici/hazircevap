@@ -21,7 +21,6 @@ from indriHandler import singleIndriQuery
 from queryBuilder import buildQueryFromQuestionData
 from queryBuilder import buildIndriQuerySingle
 from indriDocFetch import getDoc
-from translationInterface import translationWrapper as tw
 
 ### Syntactic Analysis ###
 sys.path.append('analysisInterface')
@@ -35,7 +34,7 @@ def mainParse(qText):
 
 def mainAnalyze(qObj):
     analyzer = QuestionAnalysis(qObj)
-
+    
     forwGlass = Glass(ourQuestions, backwards=False)
     backGlass = Glass(ourQuestions, backwards=True)
 
@@ -90,22 +89,16 @@ def runPipeline(questionInput):
 
     if debug:
         printMsg('Analysis DONE')
-
+    
     print('Focus : ' + qF)
     print('Mod : ' + qM)
     print('Class : ' + qC)
     print('Pnoun : ' + qP)
 
-    translation_cand = " ".join([ qP, qM, qP])
-    translation = tw.translate(translation_cand)
-    print('Phrase : %s' % translation_cand)
-    print('Translation : %s' % translation)
-
-    #focus, mod = returnFocusMod(
+#focus, mod = returnFocusMod(
     """
     BUILD THE QUERY
     """
-
     if debug:
         printMsg('Building the Query')
 

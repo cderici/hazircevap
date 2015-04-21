@@ -94,7 +94,7 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
         with open(trns_filename,) as outfile, open(clean_filename,"w") as outfile2:
             subprocess.call(["/opt/moses/scripts/ems/support/remove-segmentation-markup.perl"],
                         stdin=outfile,stdout=outfile2, shell=True)
-        print("Translated file %s" %clean_filename)
+        #print("Translated file %s" %clean_filename)
         if debug:
             printMsg('Done')
             printResult('Translation output is written to', clean_filename)
