@@ -41,9 +41,9 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
         tokenize_tr(filename,tok_filename)
         fname_list[-2] = "true"
         true_filename = ".".join(fname_list)
-        print(true_filename)
         with open(tok_filename,) as infile, open(true_filename,"w") as outfile2:
-            subprocess.call(['/opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'], stdin=infile,stdout=outfile2, shell=True)
+            subprocess.call(['/opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'], stdin=infile,stdout=outfile2, stderr=subprocess.STDOUT,shell=True)
+        print(true_filename)
         fname_list[-2] = "trs"
         trns_filename = ".".join(fname_list)
         fname_list[-2] = "cleaned"
@@ -56,9 +56,10 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
                            '-t -text-type "test"',
                            '-v 0',
                            '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2']
-        with open(true_filename,) as infile, open(trns_filename,"w") as outfile, open(clean_filename,"w") as outfile2:
+        with open(true_filename,) as infile, open(trns_filename,"w") as outfile:
             subprocess.call([" ".join(translation_cmd)],
-                        stdin=infile,stdout=outfile, shell=True)
+                        stdin=infile,stdout=outfile, stderr=subprocess.STDOUT,shell=True)
+        with open(trns_filename,) as outfile, open(clean_filename,"w") as outfile2:
             subprocess.call(["/opt/moses/scripts/ems/support/remove-segmentation-markup.perl"],
                         stdin=outfile,stdout=outfile2, shell=True)
         print("Translated file %s" %clean_filename)
