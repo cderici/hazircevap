@@ -29,8 +29,9 @@ def translate(text,input_lang="tr",output_lang="en",debug=False):
     if input_lang is "tr":
         tokens=nltk.word_tokenize(text)
         text_tok = " ".join(tokens)
-        p = Popen(['/opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'], stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-        text_true, stderr = p.communicate(text_tok)
+        truecase_cmd = '/opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b | echo ' + text_tok
+        p = Popen(truecase_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        text_true, stderr = p.communicate()
         if stderr:
             print(stderr)
             return
@@ -41,15 +42,16 @@ def translate(text,input_lang="tr",output_lang="en",debug=False):
                            '-threads 8',
                            '-t -text-type "test"',
                            '-v 0',
-                           '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2']
+                           '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2',
+                           '| echo '+ text_true ]
         p = Popen([" ".join(translation_cmd)], stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-        text_trans, stderr = p.communicate(text_true)
+        text_trans, stderr = p.communicate()
         if stderr:
             print(stderr)
             return
-        p = Popen(["/opt/moses/scripts/ems/support/remove-segmentation-markup.perl"],
-                  stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-        text_clean, stderr = p.communicate(text_trans)
+        markup_cmd = "/opt/moses/scripts/ems/support/remove-segmentation-markup.perl | echo "+text_trans
+        p = Popen(markup_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        text_clean, stderr = p.communicate()
         if stderr:
             print(stderr)
             return
