@@ -99,12 +99,13 @@ def runPipeline(questionInput):
     translation_cand = " ".join([ qF, qM, qC, qP])
     translation = tw.translate(translation_cand)
 
-    print('[%s] -> %s' %(translation_cand,translation)
+    print('[%s] -> %s' %(translation_cand,translation))
 
-#focus, mod = returnFocusMod(
+    #focus, mod = returnFocusMod(
     """
     BUILD THE QUERY
     """
+
     if debug:
         printMsg('Building the Query')
 
