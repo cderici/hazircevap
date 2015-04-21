@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import subprocess, shutil, os, sys
 import codecs
@@ -46,13 +46,15 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
             subprocess.call(['/opt/moses/scripts/tokenizer/lowercase.perl'],stdin=infile,stdout=outfile, shell=True)
         fname_list[-2] = "trs"
         trns_filename = ".".join(fname_list)
-        subprocess.call(['/opt/moses/mosesdecoder/bin/moses', '-search-algorithm 1', '-cube-pruning-pop-limit 5000', '-s 5000', '-threads 8', 
-                         '-t -text-type "test"', '-v 0', '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2'], 
-                        stdin=low_filename,stdout=trns_filename, shell=True)
+        with open(low_filename,) as infile, open(trns_filename,"w") as outfile:
+            subprocess.call(['/opt/moses/mosesdecoder/bin/moses', '-search-algorithm 1', '-cube-pruning-pop-limit 5000', '-s 5000', '-threads 8',
+                         '-t -text-type "test"', '-v 0', '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2'],
+                        stdin=infile,stdout=outfile, shell=True)
         fname_list[-2] = "true"
         true_filename = "".join(fname_list)
-        subprocess.call(['/opt/moses/scripts/recaser/truecase.perl', '-model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr'], 
-                        stdin=trns_filename,stdout=true_filename, shell=True)
+        with open(trns_filename,) as infile, open(true_filename,"w") as outfile:
+            subprocess.call(['/opt/moses/scripts/recaser/truecase.perl', '-model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr'],
+                        stdin=infile,stdout=outfile, shell=True)
         print("Translated file %s" %true_filename)
         if debug:
             printMsg('Done')
