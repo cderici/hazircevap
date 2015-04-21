@@ -25,7 +25,7 @@ TRANSLATION
 Translation system translates any given phrase and returns the translation
 
 """
-def translate(text,input_lang="tr",output_lang="en",debug=True):
+def translate(text,input_lang="tr",output_lang="en",debug=False):
     if input_lang is "tr":
         tokens=nltk.word_tokenize(text)
         text_tok = " ".join(tokens)
