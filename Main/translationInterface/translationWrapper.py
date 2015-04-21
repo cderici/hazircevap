@@ -75,6 +75,7 @@ def tokenize_file_eng(filename):
     print(tok_filename)
     with open(filename,) as infile, open(tok_filename,"w") as outfile:
         subprocess.call(['/opt/moses/scripts/tokenizer/tokenizer.perl -a -l en'],stdin=infile,stdout=outfile, shell=True)
+    print('Tokenized output is written to', tok_filename)
 
 def test_blue(tr_filename,en_filename):
     with open(tr_filename,) as tr_file, open(en_filename,) as en_file:
