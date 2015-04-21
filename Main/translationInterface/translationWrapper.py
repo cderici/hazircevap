@@ -53,7 +53,7 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
         fname_list[-2] = "true"
         true_filename = ".".join(fname_list)
         with open(trns_filename,) as infile, open(true_filename,"w") as outfile:
-            subprocess.call(['/opt/moses/scripts/recaser/truecase.perl', '--model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr'],
+            subprocess.call(['/opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'],
                         stdin=infile,stdout=outfile, shell=True)
         print("Translated file %s" %true_filename)
         if debug:
