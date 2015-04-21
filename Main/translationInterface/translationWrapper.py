@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import subprocess, shutil, os, sys
-import codecs
+import codecs, nltk
 
 #sys.path.append('../')
 #sys.path.append('utils')
@@ -10,6 +10,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from tokenize_tr import tokenize_tr
+from subprocess import Popen, PIPE
 
 """
 PROVIDED FUNCTIONS
@@ -26,7 +27,38 @@ Translation system translates any given phrase and returns the translation
 """
 def translate(text,input_lang="tr",output_lang="en"):
     if input_lang is "tr":
-        pass
+        tokens=nltk.word_tokenize(text)
+        text_tok = " ".join(tokens)
+        p = Popen(['/opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'], stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        text_true, stderr = p.communicate(text_tok)
+        if stderr:
+            print(stderr)
+            return
+        translation_cmd = ['/opt/moses/mosesdecoder/bin/moses',
+                           '-search-algorithm 1',
+                           '-cube-pruning-pop-limit 5000',
+                           '-s 5000',
+                           '-threads 8',
+                           '-t -text-type "test"',
+                           '-v 0',
+                           '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2']
+        p = Popen([" ".join(translation_cmd)], stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        text_trans, stderr = p.communicate(text_tok)
+        if stderr:
+            print(stderr)
+            return
+        p = Popen(["/opt/moses/scripts/ems/support/remove-segmentation-markup.perl"],
+                  stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        text_clean, stderr = p.communicate(text_tok)
+        if stderr:
+            print(stderr)
+            return
+        print("Translated text %s" %text_clean)
+        if debug:
+            printMsg('Done')
+            printResult('Translation output is ', text_clean)
+        return text_clean
+
 
 def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=False):
     filename = "/home/hazircevap/moses/corpus/cografya/cografya_questions_all.txt"
@@ -66,6 +98,7 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
         if debug:
             printMsg('Done')
             printResult('Translation output is written to', clean_filename)
+        return clean_filename
 
 def tokenize_file_eng(filename):
     filename = '/home/hazircevap/moses/corpus/cografya/cografya_questions_all.en.txt'
@@ -81,3 +114,8 @@ def tokenize_file_eng(filename):
 def test_blue(tr_filename,en_filename):
     with open(tr_filename,) as tr_file: #, open(en_filename,) as en_file:
         subprocess.call(['/opt/moses/scripts/generic/multi-bleu.perl '+ en_filename], stdin=tr_file, shell=True)
+
+def check_stderr(stderr):
+    if stderr:
+        print(stderr)
+        return
