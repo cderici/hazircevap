@@ -25,7 +25,7 @@ TRANSLATION
 Translation system translates any given phrase and returns the translation
 
 """
-def translate(text,input_lang="tr",output_lang="en"):
+def translate(text,input_lang="tr",output_lang="en",debug=True):
     if input_lang is "tr":
         tokens=nltk.word_tokenize(text)
         text_tok = " ".join(tokens)
@@ -43,13 +43,13 @@ def translate(text,input_lang="tr",output_lang="en"):
                            '-v 0',
                            '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2']
         p = Popen([" ".join(translation_cmd)], stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-        text_trans, stderr = p.communicate(text_tok)
+        text_trans, stderr = p.communicate(text_true)
         if stderr:
             print(stderr)
             return
         p = Popen(["/opt/moses/scripts/ems/support/remove-segmentation-markup.perl"],
                   stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-        text_clean, stderr = p.communicate(text_tok)
+        text_clean, stderr = p.communicate(text_trans)
         if stderr:
             print(stderr)
             return
