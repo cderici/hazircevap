@@ -66,3 +66,13 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
         if debug:
             printMsg('Done')
             printResult('Translation output is written to', true_filename)
+
+def tokenize_file_eng(filename):
+    filename = '/home/hazircevap/moses/corpus/cografya/cografya_questions_all.en.txt'
+    fname_list = filename.split(".")
+    fname_list[-1] = "en"
+    fname_list.insert(-1,"tok")
+    tok_filename = ".".join(fname_list)
+    print(tok_filename)
+    with open(filename,) as infile, open(tok_filename,"w") as outfile:
+        subprocess.call(['/opt/moses/scripts/tokenizer/tokenizer.perl -a -l en'],stdin=infile,stdout=outfile, shell=True)
