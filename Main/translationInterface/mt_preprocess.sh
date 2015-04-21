@@ -1,6 +1,7 @@
 #!/bin/bash
 moses_path="/opt/moses"
 moses_dec_path="/opt/moses/mosesdecoder"
+moses_script_dir="/opt/moses/scripts"
 irstlm_path="$moses_path/irstlm-5.80.08"
 corpus_path="/home/hazircevap/moses/corpus/tr-en"
 working_path="/home/hazircevap/moses/working"
@@ -15,17 +16,17 @@ check_exists () {
 # /home/hazircevap/moses/corpus/tr-en/BU-ALT.tr
 # /home/hazircevap/moses/corpus/tr-en/BU-ALT.en
 function tokenize_BU_corpus {
-    $moses_path/scripts/tokenizer/tokenizer.perl -l en < $corpus_path/BU_en.txt > $corpus_path/BU.tok.en
-    python tokenize_tr.py $corpus_path/BU_tr.txt  $corpus_path/BU.tok.tr
+    $moses_script_dir/tokenizer/tokenizer.perl -l en < $corpus_path/BU-ALT.en > $corpus_path/BU-ALT.tok.en
+    python tokenize_tr.py $corpus_path/BU-ALT.tr  $corpus_path/BU-ALT.tok.tr
 }
 
 function train_truecaser {
     $moses_path/scripts/recaser/train-truecaser.perl \
 	--model $corpus_path/truecase-model.en \
-	--corpus $corpus_path/BU.tok.en
+	--corpus $corpus_path/BU-ALT.tok.en
     $moses_path/scripts/recaser/train-truecaser.perl \
 	--model $corpus_path/truecase-model.tr \
-	--corpus $corpus_path/BU.tok.tr
+	--corpus $corpus_path/BU-ALT.tok.tr
 }
 
 function truecase_BU {
@@ -105,6 +106,14 @@ function tuning_mt {
     tail -n 2 $working_path/tuning/mert-work/run*.mert.log
 }
 
+function tune_BU-ALT {
+    nohup nice $moses_path/scripts/training/mert-moses.pl \
+    /home/hazircevap/moses/corpus/tr-en/BU-ALT.tuning.tok.tr /home/hazircevap/moses/corpus/tr-en/BU-ALT.tuning.tok.en \
+	$moses_dec_path/bin/moses /home/hazircevap/hazircevap/CAGIL/run4/model/moses.ini.1 \
+	--working-dir /home/hazircevap/hazircevap/CAGIL/run4/tuning/mert-work  --mertdir $moses_dec_path/bin/ \
+	-root-dir /home/hazircevap/hazircevap/CAGIL/run4/tuning --decoder-flags="-threads 8 -v 0" &> tuning_mert.out &
+}
+
 function binarise_models {
     pt_file="$working_path/train/model/phrase-table.gz"
     reord_file="$working_path/train/model/reordering-table.wbe-msd-bidirectional-fe.gz"
@@ -152,6 +161,7 @@ function test_mt_alt {
 	< $working_path/BU.test.translated.en  >& $log_dir/test-bleu.out &
 }
 binary_ini="$working_path/binarised-model/moses.ini"
+binary_ini="/home/hazircevap/hazircevap/CAGIL/run4/model/moses.ini.1"
 translate(){
 #    echo $1 | /opt/moses/mosesdecoder/bin/moses -f /home/hazircevap/moses/working/binarised-model/moses.ini -v 0
     true_cased=$(echo $1 | $moses_path/scripts/recaser/truecase.perl --model $corpus_path/truecase-model.tr)
