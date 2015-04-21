@@ -96,7 +96,7 @@ def runPipeline(questionInput):
     print('Class : ' + qC)
     print('Pnoun : ' + qP)
 
-    translation_cand = " ".join([ qP, qM, qP])
+    translation_cand = " ".join([ qP, qM, qF])
     translation = tw.translate(translation_cand)
     print('Phrase : %s' % translation_cand)
     print('Translation : %s' % translation)
