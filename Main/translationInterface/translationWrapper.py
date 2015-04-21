@@ -54,7 +54,7 @@ def translate(text,input_lang="tr",output_lang="en",debug=False):
         if stderr:
             print("Translation Error %s" %stderr)
             return
-        markup_cmd = "echo "+text_trans+" | opt/moses/scripts/ems/support/remove-segmentation-markup.perl"
+        markup_cmd = "echo '"+text_trans+"' | opt/moses/scripts/ems/support/remove-segmentation-markup.perl"
         p = Popen(markup_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
         text_clean, stderr = p.communicate()
         if stderr:
