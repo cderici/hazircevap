@@ -39,13 +39,15 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
         tok_filename = ".".join(fname_list)
         print(tok_filename)
         tokenize_tr(filename,tok_filename)
-        fname_list[-2] = "low"
-        low_filename = ".".join(fname_list)
-        print(low_filename)
-        with open(tok_filename,) as infile, open(low_filename,"w") as outfile:
-            subprocess.call(['/opt/moses/scripts/tokenizer/lowercase.perl'],stdin=infile,stdout=outfile, shell=True)
+        fname_list[-2] = "true"
+        true_filename = ".".join(fname_list)
+        print(true_filename)
+        with open(tok_filename,) as infile, open(true_filename,"w") as outfile2:
+            subprocess.call(['/opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'], stdin=infile,stdout=outfile2, shell=True)
         fname_list[-2] = "trs"
         trns_filename = ".".join(fname_list)
+        fname_list[-2] = "cleaned"
+        clean_filename = ".".join(fname_list)
         translation_cmd = ['/opt/moses/mosesdecoder/bin/moses',
                            '-search-algorithm 1',
                            '-cube-pruning-pop-limit 5000',
@@ -54,15 +56,12 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
                            '-t -text-type "test"',
                            '-v 0',
                            '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2']
-        with open(low_filename,) as infile, open(trns_filename,"w") as outfile:
+        with open(true_filename,) as infile, open(trns_filename,"w") as outfile, open(clean_filename,"w") as outfile2:
             subprocess.call([" ".join(translation_cmd)],
                         stdin=infile,stdout=outfile, shell=True)
-        fname_list[-2] = "true"
-        true_filename = ".".join(fname_list)
-        with open(trns_filename,) as infile, open(true_filename,"w") as outfile:
-            subprocess.call(['/opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'],
-                        stdin=infile,stdout=outfile, shell=True)
-        print("Translated file %s" %true_filename)
+            subprocess.call(["/opt/moses/scripts/ems/support/remove-segmentation-markup.perl"],
+                        stdin=outfile,stdout=outfile2, shell=True)
+        print("Translated file %s" %clean_filename)
         if debug:
             printMsg('Done')
             printResult('Translation output is written to', true_filename)
@@ -76,3 +75,7 @@ def tokenize_file_eng(filename):
     print(tok_filename)
     with open(filename,) as infile, open(tok_filename,"w") as outfile:
         subprocess.call(['/opt/moses/scripts/tokenizer/tokenizer.perl -a -l en'],stdin=infile,stdout=outfile, shell=True)
+
+def test_blue(tr_filename,en_filename):
+    with open(tr_filename,) as tr_file, open(en_filename,) as en_file:
+        subprocess.call(['/opt/moses/scripts/generic/multi-bleu.perl '+ en_file], stdin=tr_file, shell=True)
