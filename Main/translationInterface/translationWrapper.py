@@ -64,7 +64,7 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
         print("Translated file %s" %clean_filename)
         if debug:
             printMsg('Done')
-            printResult('Translation output is written to', true_filename)
+            printResult('Translation output is written to', clean_filename)
 
 def tokenize_file_eng(filename):
     filename = '/home/hazircevap/moses/corpus/cografya/cografya_questions_all.en.txt'
@@ -78,5 +78,5 @@ def tokenize_file_eng(filename):
     print('Tokenized output is written to', tok_filename)
 
 def test_blue(tr_filename,en_filename):
-    with open(tr_filename,) as tr_file, open(en_filename,) as en_file:
-        subprocess.call(['/opt/moses/scripts/generic/multi-bleu.perl '+ en_file], stdin=tr_file, shell=True)
+    with open(tr_filename,) as tr_file: #, open(en_filename,) as en_file:
+        subprocess.call(['/opt/moses/scripts/generic/multi-bleu.perl '+ en_filename], stdin=tr_file, shell=True)
