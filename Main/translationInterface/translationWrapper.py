@@ -29,7 +29,7 @@ def translate(text,input_lang="tr",output_lang="en",debug=False):
     if input_lang is "tr":
         tokens=nltk.word_tokenize(text)
         text_tok = " ".join(tokens)
-        truecase_cmd = 'echo '+ text_tok +' | /opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'
+        truecase_cmd = 'echo "'+ text_tok +'" | /opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'
         if debug:
             print(truecase_cmd)
         p = Popen(truecase_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
