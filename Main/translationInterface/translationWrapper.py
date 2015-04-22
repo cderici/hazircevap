@@ -60,11 +60,11 @@ def translate(text,input_lang="tr",output_lang="en",debug=False):
         if stderr:
             print("Markup Error %s" %stderr)
             return
-        print("Translated text %s" %text_clean)
+        #print("Translated text %s" %text_clean.strip())
         if debug:
             printMsg('Done')
             printResult('Translation output is ', text_clean)
-        return text_clean
+        return text_clean.strip()
 
 
 def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=False):
