@@ -230,7 +230,7 @@ def runPipeline(questionInput):
     print('Phrase : %s' % translation_cand)
     print('Translation : %s' % translation)
 
-    tr_splitted_list = translation[0].split("\n")
+    tr_splitted_list = translation.split("\n")
     print(len(tr_splitted_list))
     print(tr_splitted_list)
     for i in range(len(tr_splitted_list)):
