@@ -231,8 +231,10 @@ def runPipeline(questionInput):
     #print('Translation : %s' % translation)
 
     tr_splitted_list = translation.split("\n")
+    print(len(tr_splitted_list))
+    print(tr_splitted_list)
     for i in range(len(tr_splitted_list)):
-        print("Translation of %s %s" %(translation_titles[i],translation_cand[i]))
+        print("Translation of %s %s" %(translation_titles[i],tr_splitted_list[i]))
 
     """
     BUILD THE QUERY
