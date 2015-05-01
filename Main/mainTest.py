@@ -223,16 +223,16 @@ def runPipeline(questionInput):
     if debug:
         printMsg('TRANSLATION')
 
-    translation_cand = "\n".join([ qS, qP, qM +" "+ qFR, qS])
+    translation_titles = "\n".join([ "subject", 'Pnoun : ' , 'Mod + Focus : '])
+    translation_cand = "\n".join([ qS, qP, qM +" "+ qFR])
     translation = mainTranslate(translation_cand)
 
-    print('Phrase : %s' % translation_cand)
-    print('Translation : %s' % translation)
+    #print('Phrase : %s' % translation_cand)
+    #print('Translation : %s' % translation)
 
     tr_splitted_list = translation.split("\n")
-    if (tr_splitted_list):
-        tr_splitted = " ".join(tr_splitted_list)
-        print('Phrase : %s' % tr_splitted)
+    for i in range(len(tr_splitted_list)):
+        print("Translation of %s %s" %(translation_titles[i],translation_cand[i]))
 
     """
     BUILD THE QUERY
