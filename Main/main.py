@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import sys
+import sys, os
 #sys.path.append('utils')
 
 ### PARSER ###
 sys.path.append('parserInterface')
 from parserWrapper import parse
 from sysUtil import printMsg, printResult
+import cPickle as pickle
 
 ### TMP ###
 from maltImporter import MaltImporter
@@ -21,6 +22,9 @@ from indriHandler import singleIndriQuery
 from queryBuilder import buildQueryFromQuestionData
 from queryBuilder import buildIndriQuerySingle
 from indriDocFetch import getDoc
+
+### TRANSLATION ###
+from translationInterface import translationWrapper as tw
 
 ### Syntactic Analysis ###
 sys.path.append('analysisInterface')
@@ -38,12 +42,82 @@ def mainAnalyze(qObj):
     forwGlass = Glass(ourQuestions, backwards=False)
     backGlass = Glass(ourQuestions, backwards=True)
 
-    qFocus, qMod, qClass, qPnoun = analyzer.fullAnalysis(backGlass, forwGlass)
+    qFocus, qFocusRoots, qMod, qClass, qPnoun, qSubj = analyzer.fullAnalysis(backGlass, forwGlass)
 
-    return qFocus, qMod, qClass, qPnoun
+    return qFocus, qFocusRoots, qMod, qClass, qPnoun, qSubj
 
-def mainBuildQuery(qObj):
-    return buildQueryFromQuestionData(qObj)
+def mainEval(questionList, parsedBefore, dataPath, topDocs=5):
+    focusListFoundT = []
+    modListFoundT = []
+    classListFound = []
+    transPhraseList = []
+    transList = []
+    relatedDocs = []
+
+    count = 0 # will be used to index pickle dumps
+
+    if parsedBefore:
+        pickleParseList = pickle.load(open(parsedBefore, "rb"))
+    else:
+        pickleParseList = []
+
+    transPath = dataPath[0:len(dataPath)-5]+".translations"
+    alreadyTranslated = os.path.isfile(transPath)
+    if alreadyTranslated:
+        pickleTransList = pickle.load(open(transPath, "rb"))
+    else:
+        pickleTransList = []
+
+    for question in questionList:
+
+        #qstn = Question(qText, qParts)
+        if parsedBefore:
+            # grap the parts from the parsedBefore directory
+            ## load pickle list
+            qParts = pickleParseList[count]
+
+            qObj = Question(question, qParts)
+        else:
+            qObj = mainParse(question)
+
+            pickleParseList.append(qObj.questionParts)
+
+        foc, focRoot, mod, qclass, pnoun, subj = mainAnalyze(qObj)
+
+        mainBuildQuery(qObj)
+
+        docIds = mainQuerySingle("singleFromWeb", topDocs)
+
+        titles, texts = mainRelated(docIds)
+        
+        relatedDocs.append([titles,texts])
+
+        phrase = " ".join([pnoun, mod, focRoot, subj])
+
+        if alreadyTranslated:
+            translation = pickleTransList[count]
+        else:
+            translation = mainTranslate(phrase)
+            pickleTransList.append(translation)
+
+        focusListFoundT.append(foc)
+        modListFoundT.append(mod)
+        classListFound.append(qclass)
+        transPhraseList.append(phrase)
+        transList.append(translation)
+
+        count += 1
+
+    if not parsedBefore:
+        pickle.dump(pickleParseList, open(dataPath[0:len(dataPath)-5]+".parsed", "wb"))
+
+    if not alreadyTranslated:
+        pickle.dump(pickleTransList, open(transPath, "wb"))
+
+    return focusListFoundT, modListFoundT, classListFound, transPhraseList, transList, relatedDocs
+
+def mainBuildQuery(qObj, paramFile="singleFromWeb"):
+    return buildQueryFromQuestionData(qObj, paramFile)
 
 def mainQuerySingle(paramFile="singleFromWeb", count=5):
     return singleIndriQuery(paramFile, count)
@@ -58,6 +132,52 @@ def mainRelated(docIDs):
         texts.append(dText)
 
     return titles, texts
+
+def mainTranslate(translation_cand):
+    return tw.translate(translation_cand)
+
+def mainReadDataFile(dataFilePath):
+    if not os.path.isfile(dataFilePath):
+        error("NOT A DATA FILE")
+
+    questionList = []
+    focList = []
+    modList = []
+    classList = []
+
+    """
+    FORMAT:
+
+    qText|focus|mod|coarseClass|fineClass|Answer
+    """
+
+    with open(dataFilePath, 'r') as dataFile:
+        for line in dataFile:
+            pieces = line.split("|")
+            questionList.append(pieces[0])
+            focList.append(pieces[1].split(" "))
+            modList.append(pieces[2].split(" "))
+            classList.append(pieces[3])
+
+    """ CHECKSUM
+    q = len(questionList)
+    f = len(focList)
+    m = len(modList)
+    c = len(classList)
+
+    if not (q == f and q == m and q == c):
+        print("SOMETHING IS WRONG HERE: " + str(q) + " - " + str(f) + " - " + str(m) + " - " + str(c))
+    else:
+        print("ZIP SHOULD BE FINE")
+    """
+
+    # look for the dataFilePath+Parsed directory
+    # ./.../.../cog.data -> look for -> ./.../.../cogParsed/
+    parsedBefore = False
+    if os.path.isfile(dataFilePath[0:len(dataFilePath)-5]+".parsed"):
+        parsedBefore = dataFilePath[0:len(dataFilePath)-5]+".parsed"
+
+    return questionList, focList, modList, classList, parsedBefore
 
 def runPipeline(questionInput):
     """
@@ -85,7 +205,7 @@ def runPipeline(questionInput):
     if debug:
         printMsg('Running Analysis')
 
-    qF, qM, qC, qP = mainAnalyze(qstnObj)
+    qF, qFR, qM, qC, qP, qS = mainAnalyze(qstnObj)
 
     if debug:
         printMsg('Analysis DONE')
@@ -95,7 +215,18 @@ def runPipeline(questionInput):
     print('Class : ' + qC)
     print('Pnoun : ' + qP)
 
-#focus, mod = returnFocusMod(
+    """
+    TRANSLATION
+    """
+    if debug:
+        printMsg('TRANSLATION')
+
+    translation_cand = " ".join([ qP, qM, qFR, qS])
+    translation = mainTranslate(translation_cand)
+    
+    print('Phrase : %s' % translation_cand)
+    print('Translation : %s' % translation)
+
     """
     BUILD THE QUERY
     """
@@ -120,3 +251,9 @@ def runPipeline(questionInput):
 if 'test' in sys.argv:
     qText = "Türkiyenin en büyük ovası hangisidir"
     runPipeline(qText)
+
+if 'genPreParse' in sys.argv:
+    path = "/home/hazircevap/hazircevap/Data/Biyoloji/Biyoloji_closeended/bio.data"
+    qList, fList, mList, cList, parsedBefore = mainReadDataFile(path)
+
+    fListF, mListF, cListF, transPList, transList = mainEval(qList, parsedBefore, path)

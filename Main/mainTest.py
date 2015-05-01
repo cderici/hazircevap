@@ -39,9 +39,9 @@ def mainAnalyze(qObj):
     forwGlass = Glass(ourQuestions, backwards=False)
     backGlass = Glass(ourQuestions, backwards=True)
 
-    qFocus, qMod, qClass, qPnoun = analyzer.fullAnalysis(backGlass, forwGlass)
+    qFocus, qFocusRoots, qMod, qClass, qPnoun, qSubj = analyzer.fullAnalysis(backGlass, forwGlass)
 
-    return qFocus, qMod, qClass, qPnoun
+    return qFocus, qFocusRoots, qMod, qClass, qPnoun, qSubj
 
 def mainBuildQuery(qObj):
     return buildQueryFromQuestionData(qObj)
@@ -59,6 +59,9 @@ def mainRelated(docIDs):
         texts.append(dText)
 
     return titles, texts
+
+def mainTranslate(translation_cand):
+    return tw.translate(translation_cand)
 
 def runPipeline(questionInput):
     """
@@ -97,7 +100,8 @@ def runPipeline(questionInput):
     print('Pnoun : ' + qP)
 
     translation_cand = " ".join([ qP, qM, qF])
-    translation = tw.translate(translation_cand)
+    translation = mainTranslate(translation_cand)
+    
     print('Phrase : %s' % translation_cand)
     print('Translation : %s' % translation)
 
