@@ -223,12 +223,12 @@ def runPipeline(questionInput):
     if debug:
         printMsg('TRANSLATION')
 
-    translation_titles = "\n".join([ "subject", 'Pnoun : ' , 'Mod + Focus : '])
+    translation_titles = [ "Subject", 'Pnoun : ' , 'Mod + Focus : ']
     translation_cand = "\n".join([ qS, qP, qM +" "+ qFR])
     translation = mainTranslate(translation_cand)
 
-    #print('Phrase : %s' % translation_cand)
-    #print('Translation : %s' % translation)
+    print('Phrase : %s' % translation_cand)
+    print('Translation : %s' % translation)
 
     tr_splitted_list = translation[0].split("\n")
     print(len(tr_splitted_list))
