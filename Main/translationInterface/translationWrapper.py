@@ -27,8 +27,8 @@ Translation system translates any given phrase and returns the translation
 """
 def translate(text,input_lang="tr",output_lang="en",debug=False):
     if input_lang is "tr":
-        tokens=nltk.word_tokenize(text)
-        text_tok = " ".join(tokens)
+        text_list = text.split("\n")
+        text_tok = "\n".join([" ".join(nltk.word_tokenize(tokens)) for tokens in text_list])
         truecase_cmd = 'echo "'+ text_tok +'" | /opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'
         if debug:
             print(truecase_cmd)
