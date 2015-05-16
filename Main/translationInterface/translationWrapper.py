@@ -25,9 +25,11 @@ TRANSLATION
 Translation system translates any given phrase and returns the translation
 
 """
+# INI_FILE = "/home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2"
+INI_FILE = "/home/hazircevap/hazircevap/CAGIL/run5/binarised-model/moses.ini"
 def translate(text,input_lang="tr",output_lang="en",debug=False):
     if input_lang is "tr":
-        text_list = text.split("\n")
+        text_list = text.lower().split("\n")
         text_tok = "\n".join([" ".join(nltk.word_tokenize(tokens)) for tokens in text_list])
         truecase_cmd = 'echo "'+ text_tok +'" | /opt/moses/scripts/recaser/truecase.perl --model /home/hazircevap/hazircevap/CAGIL/run5/corpus/toy.clean.1.tr -b'
         if debug:
@@ -45,7 +47,7 @@ def translate(text,input_lang="tr",output_lang="en",debug=False):
                            '-threads 8',
                            '-t -text-type "test"',
                            '-v 0',
-                           '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2',
+                           '-f %s' %INI_FILE,
                            ]
         if debug:
             print(translation_cmd)
@@ -68,7 +70,7 @@ def translate(text,input_lang="tr",output_lang="en",debug=False):
 
 
 def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=False):
-    filename = "/home/hazircevap/moses/corpus/cografya/cografya_questions_all.txt"
+    #filename = "/home/hazircevap/moses/corpus/cografya/cografya_questions_all.txt"
     if debug:
         printMsg('Preparing for Translation')
     if raw:
@@ -94,13 +96,14 @@ def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=Fals
                            '-threads 8',
                            '-t -text-type "test"',
                            '-v 0',
-                           '-f /home/hazircevap/hazircevap/CAGIL/run5/evaluation/test.filtered.ini.2']
+                           '-f %s' %INI_FILE,
+                           ]
         with open(true_filename,) as infile, open(trns_filename,"w") as outfile:
             subprocess.call([" ".join(translation_cmd)],
-                        stdin=infile,stdout=outfile, stderr=subprocess.STDOUT,shell=True)
+                        stdin=infile,stdout=outfile, stderr=PIPE,shell=True)
         with open(trns_filename,) as outfile, open(clean_filename,"w") as outfile2:
             subprocess.call(["/opt/moses/scripts/ems/support/remove-segmentation-markup.perl"],
-                        stdin=outfile,stdout=outfile2, shell=True)
+                        stdin=outfile,stdout=outfile2, stderr=PIPE, shell=True)
         #print("Translated file %s" %clean_filename)
         if debug:
             printMsg('Done')
