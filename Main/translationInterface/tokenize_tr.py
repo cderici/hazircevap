@@ -1,6 +1,8 @@
 from __future__ import print_function
 import nltk,codecs,sys,os
-
+##
+# python ~/hazircevap/Main/translationInterface/tokenize_tr.py ~/moses/corpus/TED/ted.train.tr ~/moses/corpus/TED/ted.train.tok.tr
+##
 def tokenize_tr(in_filename,out_filename):
     sys.stdout.write("Nltk word_tokenize\nLanguage: tr\n")
     tokens = []
