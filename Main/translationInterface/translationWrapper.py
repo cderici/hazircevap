@@ -68,7 +68,7 @@ def translate(text,input_lang="tr",output_lang="en",debug=False):
 
 
 def translate_file(filename,raw=True,input_lang="tr",output_lang="en",debug=False):
-    filename = "/home/hazircevap/moses/corpus/cografya/cografya_questions_all.txt"
+    #filename = "/home/hazircevap/moses/corpus/cografya/cografya_questions_all.txt"
     if debug:
         printMsg('Preparing for Translation')
     if raw:
