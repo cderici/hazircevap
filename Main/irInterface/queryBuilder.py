@@ -12,7 +12,7 @@ queryDir = '../IR/queries/'
 indexDir = '../IR/indri-5.0/vikiEBAindex/'
 
 def massBuildQuery(listOfQobj):
-    
+
     for qobj, i in enumerate(listOfobj):
         queryFname = str(i) + ".massquery"
         buildQueryFromQuestionData(qobj, queryFileName=queryFname)
@@ -66,7 +66,7 @@ def buildQueryFromQuestionData(qObj, queryFileName="singleFromWeb", queryInput=F
                 modString = " 1.0 #ud2(" + " ".join(mods) + " " + focus + ")"
                 modStringAll += modString + ""
 
-        finalString += modStringAll        
+        finalString += modStringAll
 
     pNounStr = ""
     for pnoun in qPnounList:
@@ -97,7 +97,7 @@ def buildIndriQuerySingle(queryFileNameStr, terms, directQueryText=False):
 
         termsText = re.sub("[,]", '', termsText)
 
-    queryText = """ 
+    queryText = """
 <parameters>
 <index>""" + indexDir + """</index>
 
@@ -118,3 +118,30 @@ def buildIndriQuerySingle(queryFileNameStr, terms, directQueryText=False):
 
     #print("Build Query Written : " + str(termsText))
     return termsText
+
+### ENGLISH ###
+###############
+index_dir_tr = '../IR/indri-5.0/wikipediaIndex/'
+
+def buildIndriQuerySingle_en(qID, question):
+
+    terms = question.questionText.split()
+    termsText = " ".join(terms)
+    buildIndriQuerySingleFromQuestion_en(qID, termsText)
+
+def buildIndriQuerySingleFromQuestion_en(qID, termsText):
+    termsText = re.sub("[,]", '', termsText)
+    #    termsText_decoded = termsText#.decode('utf-8')
+    queryText = """<parameters>
+    <index>""" + index_dir_tr + """</index>
+
+    <query>
+    <number>0</number>
+    <text>#combine("""
+    queryText += termsText + ')'
+    queryText += """</text>
+    </query>
+    </parameters>
+    """
+    with codecs.open(queryDir + str(qID), 'w+', 'utf-8') as q_file:
+        q_file.write(queryText)
