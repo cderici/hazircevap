@@ -239,8 +239,10 @@ def runPipeline(questionInput):
     if debug:
         printMsg('CLIR')
 
-    docs = retrieve_from_english.main("Türkiye'nin en büyük ovası hangisidir?")
-    print(docs)
+    docs = retrieve_from_english.main(qText)
+    for doc in docs:
+        if doc:
+            print(doc.split("\n")[0])
 
     if debug:
         printMsg('CLIR ENDED')
