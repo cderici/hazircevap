@@ -31,8 +31,8 @@ def fetch_and_translate(doc_id,doc_filename):
     try:
         doc = " ".join(doc_tuple)
     except TypeError:
-        print doc_tuple
-        exit
+        print("[Error ]Doc id: %s" %doc_id)
+        return
     translated_doc = []
     for part in doc.split("\n"):
         if len(part) < 5000:
