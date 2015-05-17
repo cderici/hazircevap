@@ -207,8 +207,8 @@ def mainRelated(docIDs):
 def mainTranslate(translation_cand):
     return tw.translate(translation_cand)
 
-def mainSummarize(qText, aText, relatedTitles, relatedDocs):
-    return summarize(qText, aText, relatedTitles, relatedDocs)
+def mainSummarize(qText, aText, relatedTitles, relatedDocs, howMany=3):
+    return summarize(qText, aText, relatedTitles, relatedDocs, howMany)
 
 def mainReadDataFile(dataFilePath):
     if not os.path.isfile(dataFilePath):
