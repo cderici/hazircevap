@@ -12,8 +12,7 @@ queryDir = '../IR/queries/'
 indexDir = '../IR/indri-5.0/vikiEBAindex/'
 
 def massBuildQuery(listOfQobj):
-
-    for qobj, i in enumerate(listOfobj):
+    for qobj, i in enumerate(listOfQobj):
         queryFname = str(i) + ".massquery"
         buildQueryFromQuestionData(qobj, queryFileName=queryFname)
 

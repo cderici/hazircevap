@@ -47,7 +47,7 @@ def fetch_and_translate(doc_id,doc_filename):
 
 def query(question_en):
     paramFile="singleFromWeb_en"
-    queryBuilder.buildIndriQuerySingle_en(paramFile, question_en)
+    queryBuilder.buildIndriQuerySingle_en(paramFile, question_en.encode("utf-8"))
     doc_ids = singleIndriQuery(paramFile, count=3)
     translated_docs = []
     for doc_id in doc_ids:
