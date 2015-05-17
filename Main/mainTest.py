@@ -25,6 +25,7 @@ from indriDocFetch import getDoc
 
 ### TRANSLATION ###
 from translationInterface import translationWrapper as tw
+from clirInterface import retrieve_from_english
 
 ### Syntactic Analysis ###
 sys.path.append('analysisInterface')
@@ -232,6 +233,8 @@ def runPipeline(questionInput):
     tr_splitted_list = translation.split("\n")
     for i in range(len(tr_splitted_list)):
         print("Translation of %s %s" %(translation_titles[i],tr_splitted_list[i]))
+
+    retrieve_from_english.main("Türkiye'nin en büyük ovası hangisidir?")
 
     """
     BUILD THE QUERY

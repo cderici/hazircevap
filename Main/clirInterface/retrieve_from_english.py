@@ -12,7 +12,7 @@ key = "AIzaSyCDWvrBXpTFAfbcJqkyaVZrL_AwL2EM2pc"
 def translate(text,target="tr",source="en",domain="google"):
     escaped_source = quote(text, '')
     google_url = "https://www.googleapis.com/language/translate/v2"
-    full_url = "%s?q=%s&target=%s&format=text&source=%s&key=%s" %(google_url,target,source,escaped_source,key)
+    full_url = "%s?q=%s&target=%s&format=text&source=%s&key=%s" %(google_url,escaped_source,target,source,key)
     req = urllib2.Request(url=full_url)
     r = urllib2.urlopen(req)
     res = r.read().decode('utf-8')
