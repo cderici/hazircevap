@@ -1,4 +1,4 @@
-import urllib2,sys
+import urllib2,sys,json
 from urllib import quote
 
 ### IR #####
@@ -9,17 +9,20 @@ import queryBuilder
 
 key = "AIzaSyCDWvrBXpTFAfbcJqkyaVZrL_AwL2EM2pc"
 
-def translate(text,target="tr",source="en",domain="google"):
-    escaped_source = quote(text, '')
+def translate(text,source="tr",target="en",domain="google"):
+    escaped_source = quote(text.encode('utf8'), '')
     google_url = "https://www.googleapis.com/language/translate/v2"
     full_url = "%s?q=%s&target=%s&format=text&source=%s&key=%s" %(google_url,escaped_source,target,source,key)
     req = urllib2.Request(url=full_url)
     r = urllib2.urlopen(req)
-    res = r.read().decode('utf-8')
-    return res
+    res = json.loads(r.read().decode('utf-8'))
+    translations = res['data']['translations']
+    if translations:
+        return translations[0]['translatedText']
+    return None
 
 def translate_en(text,domain="google"):
-    return translate(text,target="en",source="tr")
+    return translate(text,source="en",target="tr")
 
 def query(question_en):
     paramFile="singleFromWeb_en"
