@@ -124,8 +124,7 @@ def buildIndriQuerySingle(queryFileNameStr, terms, directQueryText=False):
 index_dir_tr = '../IR/indri-5.0/wikipediaIndex/'
 
 def buildIndriQuerySingle_en(qID, question):
-
-    terms = question.questionText.split()
+    terms = question.split()
     termsText = " ".join(terms)
     buildIndriQuerySingleFromQuestion_en(qID, termsText)
 
