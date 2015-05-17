@@ -29,7 +29,7 @@ def translate_en(text,domain="google"):
 def fetch_and_translate(doc_id,doc_filename):
     doc_tuple = indriDocFetch.getDoc(doc_id)
     try:
-        doc = " ".join(doc_tuple)
+        doc = "\n".join(doc_tuple)
     except TypeError:
         print("[Error ]Doc id: %s" %doc_id)
         return
