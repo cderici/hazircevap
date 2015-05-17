@@ -28,7 +28,11 @@ def translate_en(text,domain="google"):
 
 def fetch_and_translate(doc_id,doc_filename):
     doc_tuple = indriDocFetch.getDoc(doc_id)
-    doc = " ".join(doc_tuple)
+    try:
+        doc = " ".join(doc_tuple)
+    except TypeError:
+        print doc_tuple
+        exit
     translated_doc = []
     for part in doc.split("\n"):
         if len(part) < 5000:
