@@ -221,6 +221,8 @@ def runPipeline(questionInput):
     """
     TRANSLATION
     """
+
+    """
     if debug:
         printMsg('TRANSLATION')
 
@@ -233,8 +235,16 @@ def runPipeline(questionInput):
     tr_splitted_list = translation.split("\n")
     for i in range(len(tr_splitted_list)):
         print("Translation of %s %s" %(translation_titles[i],tr_splitted_list[i]))
+    """
+    if debug:
+        printMsg('CLIR')
 
-    retrieve_from_english.main("Türkiye'nin en büyük ovası hangisidir?")
+    docs = retrieve_from_english.main("Türkiye'nin en büyük ovası hangisidir?")
+    print(docs)
+
+    if debug:
+        printMsg('CLIR ENDED')
+
 
     """
     BUILD THE QUERY
