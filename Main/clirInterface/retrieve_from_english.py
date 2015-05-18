@@ -7,7 +7,7 @@ from indriHandler import singleIndriQuery
 import queryBuilder,indriDocFetch
 indriDocFetch.indexDir = queryBuilder.index_dir_tr
 ############
-debug=False
+DEBUG=False
 key = "AIzaSyCDWvrBXpTFAfbcJqkyaVZrL_AwL2EM2pc"
 translation_dir = "../Data/wikipedia_translations"
 
@@ -56,7 +56,7 @@ def query(question_en):
     paramFile="singleFromWeb_en"
     queryBuilder.buildIndriQuerySingle_en(paramFile, question_en.replace("'",""))
     doc_ids = singleIndriQuery(paramFile, count=3)
-    if debug:
+    if DEBUG:
         sys.stdout.write("%s\n" % "\t".join(doc_ids))
     translated_docs = []
     for doc_id in doc_ids:
@@ -69,7 +69,7 @@ def query(question_en):
     return translated_docs
 
 def main(question_tr,debug=False):
-    debug = debug
+    DEBUG = debug
     question_en = translate(question_tr)
     docs = query(question_en)
     #docs_tr = translate_en(docs)
