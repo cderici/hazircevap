@@ -10,7 +10,7 @@ indriDocFetch.indexDir = queryBuilder.index_dir_tr
 DEBUG=False
 key = "AIzaSyCDWvrBXpTFAfbcJqkyaVZrL_AwL2EM2pc"
 translation_dir = "../Data/wikipedia_translations"
-
+DOCS = {}
 def translate(text,source="tr",target="en",domain="google"):
     escaped_source = quote(text.encode('utf8'), '')
     google_url = "https://www.googleapis.com/language/translate/v2"
@@ -37,8 +37,7 @@ def fetch_and_translate(doc_id,doc_filename):
     doc_title,doc = indriDocFetch.getDoc(doc_id)
     doc_title_translated = translate_en(doc_title)
     translated_doc = [doc_title_translated,]
-    if DEBUG:
-        sys.stdout.write("[%s] %s (%s)\n" %(doc_id,doc_title,doc_title_translated))
+    DOCS[doc_id] =  "%s (%s)" % (doc_title,doc_title_translated)
     for part in doc.split("\n"):
         if len(part) < 5000:
             part_translated = translate_en(part)
@@ -62,6 +61,8 @@ def query(question_en):
                 translated_docs.append("".join(doc_file.readlines()))
         else:
             translated_docs.append(fetch_and_translate(doc_id,doc_filename))
+        if DEBUG:
+            sys.stdout.write("[%s] %s\n" %(doc_id,DOCS.get(doc_id) or ""))
     return translated_docs
 
 def main(question_tr):
