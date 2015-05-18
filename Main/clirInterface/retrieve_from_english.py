@@ -55,6 +55,11 @@ def query(question_en):
     doc_ids = singleIndriQuery(param_file, count=3)
     translated_docs = []
     for doc_id in doc_ids:
+        try:
+            int(doc_id)
+        except ValueError:
+            sys.stderr.write("Query error")
+            break
         doc_filename = os.path.join(translation_dir, doc_id)
         if os.path.exists(doc_filename):
             with open(doc_filename) as doc_file:
@@ -68,7 +73,11 @@ def query(question_en):
 def get_last_query():
     param_file = "singleFromWeb_en"
     doc_ids = singleIndriQuery(param_file, count=3)
+    with open('../IR/queries/singleFromWeb_en') as q_file:
+        print(q_file.readlines())
     return doc_ids
+
+
 
 def main(question_tr):
     question_en = translate(question_tr)
