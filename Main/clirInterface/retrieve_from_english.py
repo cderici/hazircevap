@@ -3,7 +3,7 @@ import urllib2,sys,json,os,io
 from urllib import quote
 
 ### IR #####
-sys.path.append('../irInterface')
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../irInterface'))
 from indriHandler import singleIndriQuery
 import queryBuilder,indriDocFetch
 indriDocFetch.indexdir = queryBuilder.index_dir_tr
