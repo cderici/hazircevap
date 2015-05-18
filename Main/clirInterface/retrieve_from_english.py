@@ -7,7 +7,7 @@ from indriHandler import singleIndriQuery
 import queryBuilder,indriDocFetch
 indriDocFetch.indexDir = queryBuilder.index_dir_tr
 ############
-
+debug=False
 key = "AIzaSyCDWvrBXpTFAfbcJqkyaVZrL_AwL2EM2pc"
 translation_dir = "../Data/wikipedia_translations"
 
@@ -19,7 +19,8 @@ def translate(text,source="tr",target="en",domain="google"):
     try:
         r = urllib2.urlopen(req)
     except:
-        sys.stderr.write("Something happened [%s...] couldn't translated\nUrl : %s\n" % (text[0:20],full_url))
+        e = sys.exc_info()[0]
+        sys.stderr.write("Something happened: %s\n[%s...] couldn't translated\nUrl : %s\n" % (e,text[0:20],full_url))
         return ""
     res = json.loads(r.read().decode('utf-8'))
     translations = res['data']['translations']
@@ -35,7 +36,7 @@ def fetch_and_translate(doc_id,doc_filename):
     try:
         doc = "\n".join(doc_tuple)
     except TypeError:
-        print("[Error ]Doc id: %s" %doc_id)
+        sys.stderr.write("[Error ]Doc id: %s\n" %doc_id)
         return
     translated_doc = []
     for part in doc.split("\n"):
@@ -43,7 +44,7 @@ def fetch_and_translate(doc_id,doc_filename):
             part_translated = translate_en(part)
             translated_doc.append(part_translated)
         else:
-            sys.stderr.write("Doc id %s [HTTP Error 413: Request Entity Too Large]" %doc_id)
+            sys.stderr.write("Doc id %s [HTTP Error 413: Request Entity Too Large]\n" %doc_id)
     translated_doc_str = "\n".join(translated_doc)
     with io.open(doc_filename,"w") as doc_file:
         doc_file.write(translated_doc_str)
@@ -53,6 +54,8 @@ def query(question_en):
     paramFile="singleFromWeb_en"
     queryBuilder.buildIndriQuerySingle_en(paramFile, question_en.replace("'",""))
     doc_ids = singleIndriQuery(paramFile, count=3)
+    if debug:
+        sys.stdout.write("%s\n" % "\t".join(doc_ids))
     translated_docs = []
     for doc_id in doc_ids:
         doc_filename = os.path.join(translation_dir, doc_id)
@@ -63,7 +66,8 @@ def query(question_en):
             translated_docs.append(fetch_and_translate(doc_id,doc_filename))
     return translated_docs
 
-def main(question_tr):
+def main(question_tr,debug=False):
+    debug = debug
     question_en = translate(question_tr)
     docs = query(question_en)
     #docs_tr = translate_en(docs)
