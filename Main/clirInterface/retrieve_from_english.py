@@ -16,7 +16,11 @@ def translate(text,source="tr",target="en",domain="google"):
     google_url = "https://www.googleapis.com/language/translate/v2"
     full_url = "%s?q=%s&target=%s&format=text&source=%s&key=%s" %(google_url,escaped_source,target,source,key)
     req = urllib2.Request(url=full_url)
-    r = urllib2.urlopen(req)
+    try:
+        r = urllib2.urlopen(req)
+    except:
+        sys.stderr.write("Something happened [%s...] couldn't translated\nUrl : %s\n" % (text[0:20],full_url))
+        return None
     res = json.loads(r.read().decode('utf-8'))
     translations = res['data']['translations']
     if translations:
