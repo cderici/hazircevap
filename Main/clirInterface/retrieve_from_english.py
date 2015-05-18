@@ -58,7 +58,7 @@ def query(question_en):
         try:
             int(doc_id)
         except ValueError:
-            sys.stderr.write("Query error")
+            sys.stderr.write("Query error at %s\n" %question_en)
             break
         doc_filename = os.path.join(translation_dir, doc_id)
         if os.path.exists(doc_filename):
