@@ -21,12 +21,14 @@ def translate(text,source="tr",target="en",domain="google"):
     except:
         e = sys.exc_info()[0]
         sys.stderr.write("Something happened: %s\n[%s...] couldn't translated\nUrl : %s\n" % (e,text[0:20],full_url))
-        return ""
+        return text
     res = json.loads(r.read().decode('utf-8'))
     translations = res['data']['translations']
     if translations:
         return translations[0]['translatedText']
-    return ""
+    else:
+        sys.stderr.write("No translation received for [%s...]\n" % text[0:20])
+        return text
 
 def translate_en(text,domain="google"):
     return translate(text,source="en",target="tr")
@@ -36,7 +38,7 @@ def fetch_and_translate(doc_id,doc_filename):
     try:
         doc = "\n".join(doc_tuple)
     except TypeError:
-        sys.stderr.write("[Error ]Doc id: %s\n" %doc_id)
+        sys.stderr.write("[Error Fetching ]Doc id: %s\n" %doc_id)
         return
     translated_doc = []
     for part in doc.split("\n"):
