@@ -6,7 +6,7 @@ from urllib import quote
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../irInterface'))
 from indriHandler import singleIndriQuery
 import queryBuilder,indriDocFetch
-indriDocFetch.indexdir = queryBuilder.index_dir_tr
+indriDocFetch.indexDir = queryBuilder.index_dir_tr
 ############
 DEBUG = False
 api_key = "AIzaSyCDWvrBXpTFAfbcJqkyaVZrL_AwL2EM2pc"
