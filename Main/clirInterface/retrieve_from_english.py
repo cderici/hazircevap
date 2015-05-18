@@ -89,7 +89,7 @@ if __name__ == "__main__":
         all_questions.append(line.split("|")[0])
 
     docs_dict = {}
-    path = "../Data/wikipedia_translations/"
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"../../Data/wikipedia_translations/")
     for filename in next(os.walk(path))[2]:
         with open(os.path.join(path,filename)) as w_file:
             docs_dict[filename] = w_file.readline().strip()
