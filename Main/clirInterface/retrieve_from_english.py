@@ -5,8 +5,8 @@ from urllib import quote
 ### IR #####
 sys.path.append('irInterface')
 from indriHandler import singleIndriQuery
-import queryBuilder,indriDocFetch
-indriDocFetch.indexDir = queryBuilder.index_dir_tr
+import querybuilder,indridocfetch
+indridocfetch.indexdir = querybuilder.index_dir_tr
 ############
 DEBUG = False
 api_key = "AIzaSyCDWvrBXpTFAfbcJqkyaVZrL_AwL2EM2pc"
@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     DOCS = docs_dict
     DEBUG = True
-    i = sys.argv[1] if len(sys.argv) > 1 else 1
+    i = int(sys.argv[1]) if len(sys.argv) > 1 else 1
     for ind,qu in enumerate(all_questions[i:]):
         sys.stdout.write("[%d] %s\n" %(ind+i,qu))
         docs_l = main(qu)
