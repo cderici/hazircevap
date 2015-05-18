@@ -20,12 +20,12 @@ def translate(text,source="tr",target="en",domain="google"):
         r = urllib2.urlopen(req)
     except:
         sys.stderr.write("Something happened [%s...] couldn't translated\nUrl : %s\n" % (text[0:20],full_url))
-        return None
+        return ""
     res = json.loads(r.read().decode('utf-8'))
     translations = res['data']['translations']
     if translations:
         return translations[0]['translatedText']
-    return None
+    return ""
 
 def translate_en(text,domain="google"):
     return translate(text,source="en",target="tr")
