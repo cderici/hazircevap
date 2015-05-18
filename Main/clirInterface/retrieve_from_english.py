@@ -38,7 +38,7 @@ def fetch_and_translate(doc_id,doc_filename):
     doc_title_translated = translate_en(doc_title)
     translated_doc = [doc_title_translated,]
     if DEBUG:
-        sys.stdout.write("[%d] %s (%s)" %(doc_id,doc_title,doc_title_translated))
+        sys.stdout.write("[%s] %s (%s)" %(doc_id,doc_title,doc_title_translated))
     for part in doc.split("\n"):
         if len(part) < 5000:
             part_translated = translate_en(part)
