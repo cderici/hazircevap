@@ -65,6 +65,11 @@ def query(question_en):
             sys.stdout.write("[%s] %s\n" %(doc_id,DOCS.get(doc_id) or ""))
     return translated_docs
 
+def get_last_query():
+    param_file = "singleFromWeb_en"
+    doc_ids = singleIndriQuery(param_file, count=3)
+    return doc_ids
+
 def main(question_tr):
     question_en = translate(question_tr)
     if DEBUG:
