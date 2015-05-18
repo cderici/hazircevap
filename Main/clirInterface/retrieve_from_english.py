@@ -5,8 +5,8 @@ from urllib import quote
 ### IR #####
 sys.path.append('../irInterface')
 from indriHandler import singleIndriQuery
-import querybuilder,indridocfetch
-indridocfetch.indexdir = querybuilder.index_dir_tr
+import queryBuilder,indriDocFetch
+indriDocFetch.indexdir = queryBuilder.index_dir_tr
 ############
 DEBUG = False
 api_key = "AIzaSyCDWvrBXpTFAfbcJqkyaVZrL_AwL2EM2pc"
