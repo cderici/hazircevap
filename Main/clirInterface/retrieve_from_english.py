@@ -34,13 +34,11 @@ def translate_en(text,domain="google"):
     return translate(text,source="en",target="tr")
 
 def fetch_and_translate(doc_id,doc_filename):
-    doc_tuple = indriDocFetch.getDoc(doc_id)
-    try:
-        doc = "\n".join(doc_tuple)
-    except TypeError:
-        sys.stderr.write("[Error Fetching ]Doc id: %s\n" %doc_id)
-        return
-    translated_doc = []
+    doc_title,doc = indriDocFetch.getDoc(doc_id)
+    doc_title_translated = translate_en(doc_title)
+    translated_doc = [doc_title_translated,]
+    if DEBUG:
+        sys.stdout.write("[%d] %s (%s)" %(doc_id,doc_title,doc_title_translated))
     for part in doc.split("\n"):
         if len(part) < 5000:
             part_translated = translate_en(part)
@@ -56,8 +54,6 @@ def query(question_en):
     paramFile="singleFromWeb_en"
     queryBuilder.buildIndriQuerySingle_en(paramFile, question_en.replace("'",""))
     doc_ids = singleIndriQuery(paramFile, count=3)
-    if DEBUG:
-        sys.stdout.write("%s\n" % "\t".join(doc_ids))
     translated_docs = []
     for doc_id in doc_ids:
         doc_filename = os.path.join(translation_dir, doc_id)
@@ -68,9 +64,10 @@ def query(question_en):
             translated_docs.append(fetch_and_translate(doc_id,doc_filename))
     return translated_docs
 
-def main(question_tr,debug=False):
-    DEBUG = debug
+def main(question_tr):
     question_en = translate(question_tr)
+    if DEBUG:
+        sys.stdout.write("%s\n" % question_en)
     docs = query(question_en)
     #docs_tr = translate_en(docs)
     return docs
